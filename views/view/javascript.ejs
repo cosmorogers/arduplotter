@@ -1,0 +1,143 @@
+<%
+	var backgroundColours = {
+		'ALT_HOLD': '#e7b1b2',
+    'STABILIZE': '#ecca9e',
+    'LOITER': '#aad7a7'
+	};
+
+	var markings = [];
+  for (var k in processed.mode.modes) {
+    markings.push({xaxis: { from: processed.mode.modes[k].start, to: processed.mode.modes[k].end },color: backgroundColours[processed.mode.modes[k].name]});
+  }
+%>
+
+$(function() {
+
+	$('.toggle-size').click(function() {
+    var cont = $(this).parents('.panel').parent('div');
+    if (cont.hasClass('col-md-6')) {
+      cont.removeClass('col-md-6').addClass('col-md-12');
+      $(this).children('span').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
+    } else {
+      cont.removeClass('col-md-12').addClass('col-md-6');
+      $(this).children('span').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
+    }
+  });
+
+	<% if (processed.power.exists) { %>
+	$.plot('#current-graph',[
+	{
+		label: 'Current', 
+		data: <%= JSON.stringify(processed.power.current) %>,
+		color: '#1E9CE5',
+	}], {
+    grid: {
+      backgroundColor: { colors: ["#fff", "#eee"] },
+      markings: <%- JSON.stringify(markings) %>
+    },
+    series: { shadowSize: 0 },
+    xaxis: { ticks:[] },
+  });
+
+  $.plot('#totcurrent-graph',[
+	{
+		label: 'Total Current', 
+		data: <%= JSON.stringify(processed.power.totcurr) %>,
+		color: '#1E9CE5',
+	}], {
+    grid: {
+      backgroundColor: { colors: ["#fff", "#eee"] },
+      markings: <%- JSON.stringify(markings) %>
+    },
+    series: { shadowSize: 0 },
+    xaxis: { ticks:[] },
+  });
+
+	$.plot('#voltage-graph',[
+	{
+		label: 'Voltage', 
+		data: <%= JSON.stringify(processed.power.voltage) %>,
+		color: '#1E9CE5',
+	}, {
+		label: 'Board Voltage', 
+		data: <%= JSON.stringify(processed.power.bvolt) %>,
+		color: '#B94A48'
+	}], {
+    grid: {
+      backgroundColor: { colors: ["#fff", "#eee"] },
+      markings: <%- JSON.stringify(markings) %>
+    },
+    series: { shadowSize: 0 },
+    xaxis: { ticks:[] },
+  });
+
+	<% } /*power*/ %> 
+
+	<% if (processed.ctun.exists) { %>
+	$.plot('#altitude-graph',[
+	{
+		label: 'GPS', 
+		data: <%- JSON.stringify(processed.gps.alt) %>,
+		color: '#1E9CE5',
+	}, {
+		label: 'GPS Rel', 
+		data: <%- JSON.stringify(processed.gps.relAlt) %>,
+		color: '#2D6987',
+	}, {
+		label: 'Sonar', 
+		data: <%- JSON.stringify(processed.ctun.sonAlt) %>,
+		color: '#356635',
+	}, {
+		label: 'Barometer', 
+		data: <%- JSON.stringify(processed.ctun.barAlt) %>,
+		color: '#B94A48',
+	}
+	], {
+    grid: {
+      backgroundColor: { colors: ["#fff", "#eee"] },
+      markings: <%- JSON.stringify(markings) %>
+    },
+    series: { shadowSize: 0 },
+    xaxis: { ticks:[] },
+  });
+
+	$.plot('#throttle-graph',[
+	{
+		label: 'In', 
+		data: <%- JSON.stringify(processed.ctun.thrIn) %>,
+		color: '#1E9CE5',
+	}, {
+		label: 'Out', 
+		data: <%- JSON.stringify(processed.ctun.thrOut) %>,
+		color: '#B94A48',
+	}
+	], {
+    grid: {
+      backgroundColor: { colors: ["#fff", "#eee"] },
+      markings: <%- JSON.stringify(markings) %>
+    },
+    series: { shadowSize: 0 },
+    xaxis: { ticks:[] },
+  });
+
+  $.plot('#crate-graph',[
+	{
+		label: 'Climb Rate', 
+		data: <%- JSON.stringify(processed.ctun.CRate) %>,
+		color: '#1E9CE5',
+	}, {
+		label: 'Desired Climb Rate', 
+		data: <%- JSON.stringify(processed.ctun.DCRate) %>,
+		color: '#B94A48',
+	}
+	], {
+    grid: {
+      backgroundColor: { colors: ["#fff", "#eee"] },
+      markings: <%- JSON.stringify(markings) %>
+    },
+    series: { shadowSize: 0 },
+    xaxis: { ticks:[] },
+  });
+
+	<% } /*ctun*/ %>
+});

@@ -1,0 +1,148 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<p>Mode: </p>
+		</div>
+	</div>
+      
+	<div class="row">
+		<div class="col-md-12">
+			<div id="map-canvas"></div>
+		</div>
+	</div>
+      
+	<div class="row">
+		<div class="col-md-12">
+			<p></p>
+			
+			<div class="btn-group pull-right ">
+				<a href="kml.php" class="btn btn-default"><span class="glyphicon glyphicon-download-alt"></span> KML</a>
+				<a href="/view/<%= log.id %>.log" class="btn btn-default"><span class="glyphicon glyphicon-download-alt"></span> Log</a>
+			</div>
+
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#power" data-toggle="tab">Power</a></li>
+				<li><a href="#profile" data-toggle="tab">Altitude</a></li>
+				<li><a href="#messages" data-toggle="tab">Messages</a></li>
+				<li><a href="#settings" data-toggle="tab">Settings</a></li>
+				<li><a href="#params" data-toggle="tab">Params</a></li>
+			</ul>
+			<p></p>
+
+
+			<div class="tab-content">
+          
+				<div class="tab-pane active" id="power">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size visible-md visible-lg"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Voltage over time</h3>
+								</div>
+								<div class="panel-body"><div id="voltage-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Current over time</h3>
+								</div>
+								<div class="panel-body">
+								<div id="current-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Total Current</h3>
+								</div>
+								<div class="panel-body">
+								<div id="totcurrent-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+
+					</div>
+
+				</div><!-- /power tab -->
+	          
+	      <div class="tab-pane" id="profile">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Altitude</h3>
+								</div>
+								<div class="panel-body"><div id="altitude-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Throttle</h3>
+								</div>
+								<div class="panel-body"><div id="throttle-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Climb Rate</h3>
+								</div>
+								<div class="panel-body"><div id="crate-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+					</div>
+				</div><!-- /profile tab -->
+	            
+
+	      <div class="tab-pane" id="messages">
+	      	
+	      	
+	      </div>
+
+	      <div class="tab-pane" id="settings"><p>13</p><p></p><p>ArduCopter V3.0.1</p><p>Free RAM: 1432</p><p>APM 2</p><p>X</p></div>
+
+	      <div class="tab-pane" id="params">
+
+		      <div class="col-md-6 col-md-offset-3">
+		        <table class="table table-hover table-striped">
+		          <tr>
+		            <th>Parameter</th>
+		            <th>Value</th>
+		          </tr>
+		       
+	          	<% for (var k in processed.params) { %>
+	          		<tr>
+	          			<td><%= processed.params[k].name %></td>
+	          			<td><%= processed.params[k].value %></td>
+          			</tr>
+	          	<% } %>
+		        
+ 						</table>
+		      </div>
+		    </div>
+	    </div>
+		</div>
+	</div>
+</div>
+
+<%
+scripts = '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.js"></script>' + 
+'<script language="javascript" type="text/javascript" src="/flot/jquery.flot.resize.min.js"></script>' + 
+'<script language="javascript" type="text/javascript" src="/flot/jquery.flot.navigate.js"></script>' +
+'<script language="javascript" type="text/javascript" src="/view/' + log.id + '.js"></script>';
+%>
