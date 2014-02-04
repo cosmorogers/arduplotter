@@ -21,18 +21,20 @@
 			</div>
 
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#power" data-toggle="tab">Power</a></li>
-				<li><a href="#profile" data-toggle="tab">Altitude</a></li>
-				<li><a href="#messages" data-toggle="tab">Messages</a></li>
-				<li><a href="#settings" data-toggle="tab">Settings</a></li>
+				<% if (processed.current.exists) { %><li><a href="#power" data-toggle="tab">Power</a></li><% } %>
+				<% if (processed.ctun.exists) { %><li><a href="#altitude" data-toggle="tab">Altitude</a></li><% } %>
+				<% if (processed.att.exists) { %><li><a href="#attitude" data-toggle="tab">Attitude</a></li><% } %>
+				<% if (processed.gps.exists) { %><li><a href="#gps" data-toggle="tab">GPS</a></li><% } %>
+				<li class="active"><a href="#messages" data-toggle="tab">Messages</a></li>
 				<li><a href="#params" data-toggle="tab">Params</a></li>
 			</ul>
 			<p></p>
 
 
 			<div class="tab-content">
-          
-				<div class="tab-pane active" id="power">
+         
+        <% if (processed.current.exists) { %>
+				<div class="tab-pane" id="power">
 					<div class="row">
 						<div class="col-md-6">
 							<div class="panel panel-primary">
@@ -56,7 +58,6 @@
 					</div>
 
 					<div class="row">
-
 						<div class="col-md-6">
 							<div class="panel panel-primary">
 								<div class="panel-heading">
@@ -67,12 +68,12 @@
 								<div id="totcurrent-graph"  style="width:100%;height:300px;"></div></div>
 							</div>
 						</div>
-
 					</div>
-
 				</div><!-- /power tab -->
+				<% } %>
 	          
-	      <div class="tab-pane" id="profile">
+				<% if (processed.current.exists) { %>
+	      <div class="tab-pane" id="altitude">
 					<div class="row">
 						<div class="col-md-6">
 							<div class="panel panel-primary">
@@ -106,15 +107,94 @@
 							</div>
 						</div>
 					</div>
-				</div><!-- /profile tab -->
-	            
+				</div><!-- /altitude tab -->
+	      <% } %>      
 
-	      <div class="tab-pane" id="messages">
-	      	
+				<% if (processed.att.exists) { %>
+	      <div class="tab-pane" id="attitude">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Roll</h3>
+								</div>
+								<div class="panel-body"><div id="attitude-roll-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Pitch</h3>
+								</div>
+								<div class="panel-body"><div id="attitude-pitch-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Yaw</h3>
+								</div>
+								<div class="panel-body"><div id="attitude-yaw-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+					</div>
+	      </div><!-- /attitude tab -->
+	      <% } %>
+
+				<% if (processed.gps.exists) { %>
+	      <div class="tab-pane" id="gps">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Status &amp; HDop</h3>
+								</div>
+								<div class="panel-body"><div id="gps-status-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Satellites</h3>
+								</div>
+								<div class="panel-body"><div id="gps-satellites-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Speed</h3>
+								</div>
+								<div class="panel-body">
+									<div id="gps-speed-graph"  style="width:100%;height:300px;"></div>
+									<p><strong>Average Speed:</strong> <%= processed.gps.avgSpd %>m/s
+								</div>
+							</div>
+						</div>
+					</div>
+	      </div><!-- /gps tab -->
+	      <% } %>
+
+				<div class="tab-pane active" id="messages">
+	      	<div class="alert alert-success">
+						<strong>Well done!</strong>
+						You successfully read this super important alert message.
+					</div>
 	      	
 	      </div>
 
-	      <div class="tab-pane" id="settings"><p>13</p><p></p><p>ArduCopter V3.0.1</p><p>Free RAM: 1432</p><p>APM 2</p><p>X</p></div>
 
 	      <div class="tab-pane" id="params">
 

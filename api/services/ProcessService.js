@@ -2,44 +2,162 @@
 exports.process = function(json) {
 
     var processed = {
-        mode: {
-            count: 0,
-            modes: {}
-        },
         params: [],
-        power: {
+        att: {
             exists: false,
-            thr: [],
-            thrint: [],
-            voltage: [],
-            current: [],
-            bvolt: [],
-            totcurr: [],
+            rollIn: [],
+            roll: [],
+            pitchIn: [],
+            pitch: [],
+            yawIn: [],
+            yaw: [],
+            navYaw: []
         },
-        gps: {
+        atun: {
             exists: false,
-            status: [],
-            time: [],
-            nsats: [],
-            hdop: [],
+            axis: [],
+            tuneStep: [],
+            rateMin: [],
+            rateMax: [],
+            rpGain: [],
+            rdGain: [],
+            spGain: []
+        },
+        atde: {
+            exists: false,
+            angle: [],
+            rate: []
+        },
+        cam: {
+            exists: false,
+            cams: [], //array of cameras
+            gpsTime: [],
             lat: [],
             lng: [],
-            relAlt: [],
             alt: [],
-            spd: [],
-            gcrs: []
+            roll: [],
+            pitch: [],
+            yaw: []
+        },
+        cmd: {
+            exists: false,
+            cmds: [], //array of command objects so can list them all
+            cTol: [],
+            cNum: [],
+            cId: [],
+            cOpt: [],
+            prm1: [],
+            alt: [],
+            lat: [],
+            lng: []
+        },
+        compass: {
+            exists: false,
+            x: [],
+            magX: [],
+            magY: [],
+            magZ: [],
+            ofsX: [],
+            ofsY: [],
+            ofsZ: [],
+            mofsX: [],
+            mofsY: [],
+            mofsZ: []
+        },
+        current: {
+            exists: false,
+            thr: [],
+            thrInt: [],
+            volt: [],
+            curr: [],
+            vcc: [],
+            currTot: [],
         },
         ctun: {
             exists: false,
             thrIn: [],
             sonAlt: [],
             barAlt: [],
-            WPAlt: [],
+            wpAlt: [],
             navThr: [],
             angBst: [],
-            CRate: [],
+            cRate: [],
             thrOut: [],
-            DCRate: []
+            dcRate: []
+        },
+        err: {
+            exists: false,
+        },
+        ev: {
+            exists: false,
+            evt: [],
+        },
+        gps: {
+            exists: false,
+            status: [],
+            time: [],
+            nSats: [],
+            hdop: [],
+            lat: [],
+            lng: [],
+            relAlt: [],
+            alt: [],
+            spd: [],
+            gcrs: [],
+            avgSpd: 0,
+            lAvgSpd: [],
+        },
+        imu: {
+            exists: false,
+            gyrX: [],
+            gyrY: [],
+            gyrZ: [],
+            accX: [],
+            accY: [],
+            accZ: [],
+        },
+        inav: {
+            exists: false,
+            barAlt: [],
+            iAlt: [],
+            iClb: [],
+            aCorX: [],
+            aCorY: [],
+            aCorZ: [],
+            gLat: [],
+            gLng: [],
+            iLat: [],
+            iLng: [],
+        },
+        mode: {
+            count: 0,
+            modes: {}, //array of modes!
+        },
+        ntun: {
+            exists: false,
+            wpDst: [],
+            wpBrg: [],
+            perX: [],
+            perY: [],
+            dVelX: [],
+            dVelY: [],
+            velX: [],
+            velY: [],
+            dAcX: [],
+            dAcY: [],
+            dRol: [],
+            dpit: [],
+        },
+        pm: {
+            exists: false,
+            renCnt: [],
+            renBlw: [],
+            fixCnt: [],
+            nLon: [],
+            nLoop: [],
+            maxT: [],
+            pmt: [],
+            i2cErr: [],
         }
     };
 
@@ -48,9 +166,102 @@ exports.process = function(json) {
         rowNum = parseInt(k);
         
         switch (row[0]) {
+            case 'PARM':
+                processed.params.push({'name': row[1], 'value': row[2]});
+                break;
+
+            case 'ATT':
+                processed.att.exists = true;
+                processed.att.rollIn.push(  [rowNum, parseFloat(row[1])]);
+                processed.att.roll.push(    [rowNum, parseFloat(row[2])]);
+                processed.att.pitchIn.push( [rowNum, parseFloat(row[3])]);
+                processed.att.pitch.push(   [rowNum, parseFloat(row[4])]);
+                processed.att.yawIn.push(   [rowNum, parseFloat(row[5])]);
+                processed.att.yaw.push(     [rowNum, parseFloat(row[6])]);
+                processed.att.navYaw.push(  [rowNum, parseFloat(row[7])]);
+                break;
+
+
+            case 'ATUN':
+
+                break;
+
+            case 'ATDE':
+
+                break;
+
+            case 'CAM':
+
+                break;
+
+            case 'CMD':
+
+                break;
+
+            case 'COMPASS':
+
+                break;
+
+            case 'CURR':
+                processed.current.exists = true;
+                processed.current.thr.push(     [rowNum, parseFloat(row[1])]);
+                processed.current.thrInt.push(  [rowNum, parseFloat(row[2])]);
+                processed.current.volt.push(    [rowNum, row[3]/100]);
+                processed.current.curr.push(    [rowNum, row[4]/100]);
+                processed.current.vcc.push(     [rowNum, row[5]/1000]);
+                processed.current.currTot.push( [rowNum, parseFloat(row[6])]);
+                break;
+
+            case 'CTUN':
+                processed.ctun.exists = true;
+                processed.ctun.thrIn.push(  [rowNum, parseFloat(row[1])]);
+                processed.ctun.sonAlt.push( [rowNum, parseFloat(row[2])]);
+                processed.ctun.barAlt.push( [rowNum, parseFloat(row[3])]);
+                processed.ctun.wpAlt.push(  [rowNum, parseFloat(row[4])]);
+                processed.ctun.navThr.push( [rowNum, parseFloat(row[5])]);
+                processed.ctun.angBst.push( [rowNum, parseFloat(row[6])]);
+                processed.ctun.cRate.push(  [rowNum, parseFloat(row[7])]);
+                processed.ctun.thrOut.push( [rowNum, parseFloat(row[8])]);
+                processed.ctun.dcRate.push( [rowNum, parseFloat(row[9])]);
+                break;
+
+            case 'ERR':
+
+                break;
+
+            case 'EV':
+
+                break;
+
+            case 'GPS':
+                processed.gps.exists = true;
+                processed.gps.status.push( [rowNum, parseFloat(row[1])]);
+                processed.gps.time.push(   [rowNum, parseFloat(row[2])]);
+                processed.gps.nSats.push(  [rowNum, parseFloat(row[3])]);
+                processed.gps.hdop.push(   [rowNum, parseFloat(row[4])]);
+                processed.gps.lat.push(    [rowNum, parseFloat(row[5])]);
+                processed.gps.lng.push(    [rowNum, parseFloat(row[6])]);
+                processed.gps.relAlt.push( [rowNum, parseFloat(row[7])]);
+                processed.gps.alt.push(    [rowNum, parseFloat(row[8])]);
+                processed.gps.spd.push(    [rowNum, parseFloat(row[9])]);
+                processed.gps.gcrs.push(   [rowNum, parseFloat(row[10])]);
+                
+                processed.gps.avgSpd += parseFloat(row[9]);
+                processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.length]);
+                break;
+
+            case 'IMU':
+
+                break;
+
+            case 'INAV':
+
+                break;
+
             case 'MODE':
                 var mode = {
                     'name' : row[1].trim(),
+                    'thrCrs' : parseFloat(row[2]),
                     'start': rowNum,
                     'end' : false,
                 },
@@ -65,45 +276,12 @@ exports.process = function(json) {
                 processed.mode.count = next;
                 break;
 
-            case 'PARM':
-                processed.params.push({'name': row[1], 'value': row[2]});
+            case 'NTUN':
+
                 break;
 
-            case 'CURR':
-                processed.power.exists = true;
-                processed.power.thr.push([rowNum, parseFloat(row[1])]);
-                processed.power.thrint.push([rowNum, parseFloat(row[2])]);
-                processed.power.voltage.push([rowNum, row[3]/100]);
-                processed.power.current.push([rowNum, row[4]/100]);
-                processed.power.bvolt.push([rowNum, row[5]/1000]);
-                processed.power.totcurr.push([rowNum, parseFloat(row[6])]);
-                break;
+            case 'PM':
 
-            case 'GPS':
-                processed.gps.exists = true;
-                processed.gps.status.push([rowNum, parseFloat(row[1])]);
-                processed.gps.time.push(  [rowNum, parseFloat(row[2])]);
-                processed.gps.nsats.push( [rowNum, parseFloat(row[3])]);
-                processed.gps.hdop.push(  [rowNum, parseFloat(row[4])]);
-                processed.gps.lat.push(   [rowNum, parseFloat(row[5])]);
-                processed.gps.lng.push(   [rowNum, parseFloat(row[6])]);
-                processed.gps.relAlt.push([rowNum, parseFloat(row[7])]);
-                processed.gps.alt.push(   [rowNum, parseFloat(row[8])]);
-                processed.gps.spd.push(   [rowNum, parseFloat(row[9])]);
-                processed.gps.gcrs.push(  [rowNum, parseFloat(row[10])]);
-                break;
-
-            case 'CTUN':
-                processed.ctun.exists = true;
-                processed.ctun.thrIn.push([rowNum, parseFloat(row[1])]);
-                processed.ctun.sonAlt.push([rowNum, parseFloat(row[2])]);
-                processed.ctun.barAlt.push([rowNum, parseFloat(row[3])]);
-                processed.ctun.WPAlt.push([rowNum, parseFloat(row[4])]);
-                processed.ctun.navThr.push([rowNum, parseFloat(row[5])]);
-                processed.ctun.angBst.push([rowNum, parseFloat(row[6])]);
-                processed.ctun.CRate.push([rowNum, parseFloat(row[7])]);
-                processed.ctun.thrOut.push([rowNum, parseFloat(row[8])]);
-                processed.ctun.DCRate.push([rowNum, parseFloat(row[9])]);
                 break;
 
         }
@@ -112,6 +290,11 @@ exports.process = function(json) {
 
     //Clean up the last mode
     processed.mode.modes[processed.mode.count].end = rowNum;
+
+console.log(processed.gps.avgSpd);
+console.log(processed.gps.spd.length);
+    processed.gps.avgSpd = processed.gps.avgSpd / processed.gps.spd.length;
+console.log(processed.gps.avgSpd);
 
     return processed;
 

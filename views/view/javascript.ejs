@@ -10,26 +10,29 @@
     markings.push({xaxis: { from: processed.mode.modes[k].start, to: processed.mode.modes[k].end },color: backgroundColours[processed.mode.modes[k].name]});
   }
 %>
+var colours = ['#1E9CE5', '#B94A48', '#2D6987', '#356635'];
 
 $(function() {
-
 	$('.toggle-size').click(function() {
-    var cont = $(this).parents('.panel').parent('div');
-    if (cont.hasClass('col-md-6')) {
-      cont.removeClass('col-md-6').addClass('col-md-12');
-      $(this).children('span').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
-    } else {
-      cont.removeClass('col-md-12').addClass('col-md-6');
-      $(this).children('span').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
-    }
-  });
+		var cont = $(this).parents('.panel').parent('div');
+		if (cont.hasClass('col-md-6')) {
+			cont.removeClass('col-md-6').addClass('col-md-12');
+			$(this).children('span').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
+		} else {
+			cont.removeClass('col-md-12').addClass('col-md-6');
+			$(this).children('span').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
+		}
+	});
 
-	<% if (processed.power.exists) { %>
+<% if (processed.current.exists) { %>
+	/****************************************
+	 *                Power                 *
+	 ****************************************/
 	$.plot('#current-graph',[
 	{
 		label: 'Current', 
-		data: <%= JSON.stringify(processed.power.current) %>,
-		color: '#1E9CE5',
+		data: <%= JSON.stringify(processed.current.curr) %>,
+		color: colours[0],
 	}], {
     grid: {
       backgroundColor: { colors: ["#fff", "#eee"] },
@@ -42,8 +45,8 @@ $(function() {
   $.plot('#totcurrent-graph',[
 	{
 		label: 'Total Current', 
-		data: <%= JSON.stringify(processed.power.totcurr) %>,
-		color: '#1E9CE5',
+		data: <%= JSON.stringify(processed.current.currTot) %>,
+		color: colours[0],
 	}], {
     grid: {
       backgroundColor: { colors: ["#fff", "#eee"] },
@@ -56,12 +59,12 @@ $(function() {
 	$.plot('#voltage-graph',[
 	{
 		label: 'Voltage', 
-		data: <%= JSON.stringify(processed.power.voltage) %>,
-		color: '#1E9CE5',
+		data: <%= JSON.stringify(processed.current.volt) %>,
+		color: colours[0],
 	}, {
 		label: 'Board Voltage', 
-		data: <%= JSON.stringify(processed.power.bvolt) %>,
-		color: '#B94A48'
+		data: <%= JSON.stringify(processed.current.vcc) %>,
+		color: colours[1]
 	}], {
     grid: {
       backgroundColor: { colors: ["#fff", "#eee"] },
@@ -71,45 +74,49 @@ $(function() {
     xaxis: { ticks:[] },
   });
 
-	<% } /*power*/ %> 
+<% } /*current*/ %>
 
-	<% if (processed.ctun.exists) { %>
-	$.plot('#altitude-graph',[
-	{
-		label: 'GPS', 
-		data: <%- JSON.stringify(processed.gps.alt) %>,
-		color: '#1E9CE5',
-	}, {
-		label: 'GPS Rel', 
-		data: <%- JSON.stringify(processed.gps.relAlt) %>,
-		color: '#2D6987',
-	}, {
-		label: 'Sonar', 
-		data: <%- JSON.stringify(processed.ctun.sonAlt) %>,
-		color: '#356635',
-	}, {
-		label: 'Barometer', 
-		data: <%- JSON.stringify(processed.ctun.barAlt) %>,
-		color: '#B94A48',
-	}
-	], {
-    grid: {
-      backgroundColor: { colors: ["#fff", "#eee"] },
-      markings: <%- JSON.stringify(markings) %>
-    },
-    series: { shadowSize: 0 },
-    xaxis: { ticks:[] },
-  });
+<% if (processed.ctun.exists) { %>
+	/****************************************
+	 *               Altitude               *
+	 ****************************************/
+	$.plot('#altitude-graph',[<% if (processed.gps.exists) { %>
+		{
+			label: 'GPS', 
+			data: <%- JSON.stringify(processed.gps.alt) %>,
+			color: colours[0],
+		}, {
+			label: 'GPS Rel', 
+			data: <%- JSON.stringify(processed.gps.relAlt) %>,
+			color: colours[2],
+		}, <% } %>{
+			label: 'Sonar', 
+			data: <%- JSON.stringify(processed.ctun.sonAlt) %>,
+			color: colours[3],
+		}, {
+			label: 'Barometer', 
+			data: <%- JSON.stringify(processed.ctun.barAlt) %>,
+			color: colours[1],
+		}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
 
 	$.plot('#throttle-graph',[
 	{
 		label: 'In', 
 		data: <%- JSON.stringify(processed.ctun.thrIn) %>,
-		color: '#1E9CE5',
+		color: colours[0],
 	}, {
 		label: 'Out', 
 		data: <%- JSON.stringify(processed.ctun.thrOut) %>,
-		color: '#B94A48',
+		color: colours[1],
 	}
 	], {
     grid: {
@@ -123,12 +130,12 @@ $(function() {
   $.plot('#crate-graph',[
 	{
 		label: 'Climb Rate', 
-		data: <%- JSON.stringify(processed.ctun.CRate) %>,
-		color: '#1E9CE5',
+		data: <%- JSON.stringify(processed.ctun.cRate) %>,
+		color: colours[0],
 	}, {
 		label: 'Desired Climb Rate', 
-		data: <%- JSON.stringify(processed.ctun.DCRate) %>,
-		color: '#B94A48',
+		data: <%- JSON.stringify(processed.ctun.dcRate) %>,
+		color: colours[1],
 	}
 	], {
     grid: {
@@ -139,5 +146,140 @@ $(function() {
     xaxis: { ticks:[] },
   });
 
-	<% } /*ctun*/ %>
+<% } /*ctun*/ %>
+
+<% if (processed.att.exists) { %>
+	/****************************************
+	 *               Attitude               *
+	 ****************************************/
+	$.plot('#attitude-roll-graph',[
+			{
+				label: 'Roll In', 
+				data: <%- JSON.stringify(processed.att.rollIn) %>,
+				color: colours[0],
+			}, {
+				label: 'Roll', 
+				data: <%- JSON.stringify(processed.att.roll) %>,
+				color: colours[1],
+			}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
+
+	$.plot('#attitude-pitch-graph',[
+			{
+				label: 'Pitch In', 
+				data: <%- JSON.stringify(processed.att.pitchIn) %>,
+				color: colours[0],
+			}, {
+				label: 'Pitch', 
+				data: <%- JSON.stringify(processed.att.pitch) %>,
+				color: colours[1],
+			}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
+
+	$.plot('#attitude-yaw-graph',[
+			{
+				label: 'Yaw In', 
+				data: <%- JSON.stringify(processed.att.yawIn) %>,
+				color: colours[0],
+			}, {
+				label: 'Yaw', 
+				data: <%- JSON.stringify(processed.att.yaw) %>,
+				color: colours[1],
+			}, {
+				label: 'Nav Yaw', 
+				data: <%- JSON.stringify(processed.att.navYaw) %>,
+				color: colours[2],
+			}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
+
+<% } /* attitude */%>
+
+<% if (processed.gps.exists) { %>
+	/****************************************
+	 *                 GPS                  *
+	 ****************************************/
+	$.plot('#gps-status-graph',[
+			{
+				label: 'Status', 
+				data: <%- JSON.stringify(processed.gps.status) %>,
+				color: colours[0],
+			},
+			{
+				label: 'HDop', 
+				data: <%- JSON.stringify(processed.gps.hdop) %>,
+				color: colours[1],
+			}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
+
+	$.plot('#gps-satellites-graph',[
+			{
+				label: 'Satellites', 
+				data: <%- JSON.stringify(processed.gps.nSats) %>,
+				color: colours[0],
+			}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
+
+	$.plot('#gps-speed-graph',[
+			{
+				label: 'Speed', 
+				data: <%- JSON.stringify(processed.gps.spd) %>,
+				color: colours[0],
+			},
+			{
+				label: 'Avg Speed', 
+				data: <%- JSON.stringify(processed.gps.lAvgSpd) %>,
+				color: colours[1],
+			}
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	  }
+  );
+<% } /* gps */%>
+
+
 });
