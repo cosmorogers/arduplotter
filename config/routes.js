@@ -40,9 +40,19 @@ module.exports.routes = {
     view: 'pages/about'
   },
 
-  'get /view/:id?.:format?': {
+  'get /view/:id.js' : {
+    controller : 'view',
+    action: 'javascript'
+  },
+
+  'get /view/:id.log' : {
+    controller : 'view',
+    action: 'log'
+  },
+
+  'get /view/:id': {
         controller    : 'view',
-        action        : 'find'
+        action        : 'index'
     }
 
 

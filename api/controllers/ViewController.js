@@ -17,47 +17,30 @@
 
 module.exports = {
     
-  find: function (req, res) {
+  index: function (req, res) {
+    return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+		  return res.view({
+  			'log' : log,
+  			'processed' : processed,
+		  	active: 'view'
+			});
+    });
+  },
 
-  	if (req.param('id')) {
+  javascript: function (req, res) {
+	  	return loadLog(req, res, function(req, res, log) {
+        processed = ProcessService.process(log.json);
+				res.contentType('javascript');
+				return res.view('view/javascript', {'processed' : processed, layout: null});
+      });
+  },
 
-	  	Log.findOneById(req.param('id')).done(function(err, log) {
-
-	  		if (err) {
-					res.send(404, {error: 'Not Found'});
-	  		} else {
-	  			if (req.param('format')) {
-	  				switch(req.param('format')) {
-	  					case 'log': 
-	  					  res.contentType('text');
-						    return res.send(log.raw.toString(), {}, 201);
-						    break;
-
-					    case 'js':
-					    	processed = ProcessService.process(log.json);
-					    	res.contentType('javascript');
-					    	return res.view('view/javascript', {'processed' : processed, layout: null});
-
-					    default:
-					    	res.send(404, {error: 'Not Found'});
-					    	break;
-	  				}
-	  			} else {
-	  				processed = ProcessService.process(log.json);
-					  return res.view({
-			  			'log' : log,
-			  			'processed' : processed,
-    			  	active: 'view'
-    				});	
-				  }
-			  }
-	  	});
-	  } else {
-	  	//Find a random one
-	  	res.send(404, {error: 'Not Found'});
-	  }
-
-		
+  log: function (req, res) {
+      return loadLog(req, res, function(req, res, log) {
+        res.contentType('text');
+				return res.send(log.raw.toString(), {}, 201);
+      });
   },
 
 
@@ -69,3 +52,22 @@ module.exports = {
 
   
 };
+
+function loadLog(req, res, cb) {
+  if (req.param('id')) {
+    Log.findOne(req.param('id'))
+    .done(function(err, log) {
+      if (err) {
+        return res.send(404, {error: 'Not Found error'});
+	    } else {
+        if (typeof log == 'undefined') {
+          return res.send(404, {error: 'Not Found'});
+        } else {
+          return cb(req, res, log);
+        }
+      }
+    });
+  } else {
+    return res.send(404, {error: 'Not Found missing'});
+  }
+}
