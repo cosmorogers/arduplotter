@@ -107,6 +107,7 @@ exports.process = function(json) {
             gcrs: [],
             avgSpd: 0,
             lAvgSpd: [],
+            googleMaps: [],
         },
         imu: {
             exists: false,
@@ -292,6 +293,8 @@ exports.process = function(json) {
                 
                 processed.gps.avgSpd += parseFloat(row[9]);
                 processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.length]);
+
+                processed.gps.googleMaps.push([parseFloat(row[5]),  parseFloat(row[6])]);
                 break;
 
             case 'IMU':

@@ -11,6 +11,7 @@
     markings.push({xaxis: { from: processed.mode.modes[k].start, to: processed.mode.modes[k].end },color: backgroundColours[processed.mode.modes[k].name]});
   }
 %>
+var app = {};
 var colours = ['#1E9CE5', '#B94A48', '#2D6987', '#356635'];
 
 $(function() {
@@ -280,6 +281,47 @@ $(function() {
 	    xaxis: { ticks:[] },
 	  }
   );
+
+	function initialize() {
+	  var mapOptions = {
+	    zoom: 18,
+	    center: new google.maps.LatLng(<%-processed.gps.googleMaps[0][0]%>, <%-processed.gps.googleMaps[0][1]%>),
+	    mapTypeId: google.maps.MapTypeId.SATELLITE
+	  };
+
+	  app.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+	  var flightPath = new google.maps.Polyline({
+	    path: [<% for (var k in processed.gps.googleMaps) { %>
+	    	new google.maps.LatLng(<%-processed.gps.googleMaps[k][0]%>, <%-processed.gps.googleMaps[k][1]%>),<% } %>
+	    ],
+	    geodesic: true,
+	    strokeColor: '#FF0000',
+	    strokeOpacity: 1.0,
+	    strokeWeight: 2
+	  });
+
+	  flightPath.setMap(app.map);
+
+
+	  app.marker = new google.maps.Marker({
+	    position: app.map.getCenter(),
+	    icon: {
+	      path: google.maps.SymbolPath.CIRCLE,
+	      scale: 5
+	    },
+	    draggable: false,
+	    map: app.map
+	  });
+
+	}
+
+	google.maps.event.addDomListener(window, 'load', initialize);
+
+
+	
+
+
 <% } /* gps */%>
 
 
