@@ -193,6 +193,14 @@
 						You successfully read this super important alert message.
 					</div>
 	      	
+          <% if (processed.err.exists) { %>
+            <% for (k in processed.err.errs) { %>
+              <div class="alert alert-danger">
+                <strong><%= processed.err.errs[k].type %></strong>
+                <%= processed.err.errs[k].msg %>
+              </div>
+            <% } %>
+          <% } %>
 	      </div>
 
 

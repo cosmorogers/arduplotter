@@ -87,6 +87,7 @@ exports.process = function(json) {
         },
         err: {
             exists: false,
+            errs: [],
         },
         ev: {
             exists: false,
@@ -226,7 +227,50 @@ exports.process = function(json) {
                 break;
 
             case 'ERR':
-
+                processed.err.exists = true;
+                error = {
+                  error: parseInt(row[1]),
+                  eCode: parseInt(row[2]),
+                  type: 'unknown',
+                  msg: 'unknown'
+                };
+                switch(error.error) {
+                  case 1: //Main (never used)
+                    break;
+                  case 2://Radio
+                    error.type = 'Radio';
+                    if (error.eCode = 1) {
+                      error.msg = "'Late Frame' which means the APM's onboard ppm encoder did not provide an update for at least 2 seconds";
+                    } else if (error.eCode = 0) {
+                      error.msg = "error resolved which means the ppm encoder started providing data again";
+                    }
+                    break;
+                  case 3:
+                    break;
+                  case 4:
+                    break;
+                  case 5:
+                    break;
+                  case 6: //Battery failsafe
+                    error.type = "Battery failsafe"
+                    if (error.eCode = 1) {
+                      error.msg = "battery voltage dropped below LOW_VOLT or total battery capacity used exceeded BATT_CAPACITY";
+                    }
+                    break;
+                  case 7:
+                    break;
+                  case 8:
+                    break;
+                  case 9:
+                    break;
+                  case 10:
+                    break;
+                  case 11:
+                    break;
+                  case 12:
+                    break;
+                }
+                processed.err.errs.push(error);
                 break;
 
             case 'EV':
