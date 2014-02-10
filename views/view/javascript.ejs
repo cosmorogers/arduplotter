@@ -72,7 +72,10 @@ $(function() {
       backgroundColor: { colors: ["#fff", "#eee"] },
       markings: <%- JSON.stringify(markings) %>
     },
-    series: { shadowSize: 0 },
+    series: {
+    	lines: { show: true },
+      shadowSize: 0 
+    },
     xaxis: { ticks:[] },
   });
 
@@ -102,13 +105,29 @@ $(function() {
 		}
 		], {
 	    grid: {
+	    	hoverable: true,
 	      backgroundColor: { colors: ["#fff", "#eee"] },
 	      markings: <%- JSON.stringify(markings) %>
 	    },
 	    series: { shadowSize: 0 },
+			crosshair: { mode: "x" },
 	    xaxis: { ticks:[] },
 	  }
   );
+
+  $("#altitude-graph").bind("plothover", function (event, posi, item) {
+  	if (item !== null) {
+  		//console.log(event, pos, item);
+
+			var pos = app.flightPath.getPath().getAt(item.dataIndex);
+			if (typeof pos != "undefined") {
+				app.marker.setPosition(new google.maps.LatLng(pos.lat(), pos.lng()));
+			} else {
+				console.log(pos, item.dataIndex);
+			}
+
+  	}
+  });
 
 	$.plot('#throttle-graph',[
 	{
@@ -291,27 +310,28 @@ $(function() {
 
 	  app.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-	  var flightPath = new google.maps.Polyline({
+	  app.flightPath = new google.maps.Polyline({
 	    path: [<% for (var k in processed.gps.googleMaps) { %>
 	    	new google.maps.LatLng(<%-processed.gps.googleMaps[k][0]%>, <%-processed.gps.googleMaps[k][1]%>),<% } %>
 	    ],
 	    geodesic: true,
 	    strokeColor: '#FF0000',
 	    strokeOpacity: 1.0,
-	    strokeWeight: 2
+	    strokeWeight: 2,
+	    map: app.map
 	  });
 
-	  flightPath.setMap(app.map);
+	  var image = {
+	  	url: '/images/quad.png',
+  		size: new google.maps.Size(32, 32),
+    	origin: new google.maps.Point(0,0),
+    	anchor: new google.maps.Point(16,16)
+	  };
 
-
-	  app.marker = new google.maps.Marker({
-	    position: app.map.getCenter(),
-	    icon: {
-	      path: google.maps.SymbolPath.CIRCLE,
-	      scale: 5
-	    },
-	    draggable: false,
-	    map: app.map
+  	app.marker = new google.maps.Marker({
+      position: app.map.getCenter(),
+      map: app.map,
+      icon: image
 	  });
 
 	}
@@ -323,6 +343,21 @@ $(function() {
 
 
 <% } /* gps */%>
+
+app.play = function(i) {
+	var pos = app.flightPath.getPath().getAt(i);
+	if (typeof pos !== undefined && pos != null) {
+		var latLng = new google.maps.LatLng(pos.lat(), pos.lng());
+		app.map.setCenter(latLng);
+		app.marker.setPosition(latLng);
+	}
+
+	if (i < app.flightPath.getPath().length) {
+		setTimeout(function() {
+			app.play(i+1);
+		}, 50);
+	}
+}
 
 
 });

@@ -1,13 +1,27 @@
+<%
+  active = 'view'
+  title = 'View Log'
+%>
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<p>Mode: </p>
+			<p></p>
 		</div>
 	</div>
       
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-11">
 			<div id="map-canvas"></div>
+		</div>
+		<div class="col-md-1">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Map Tools</h3>
+				</div>
+				<div class="panel-body">
+					<button type="button" id="playRouteBtn" class="btn" onclick="app.play(0)"><span class="glyphicon glyphicon-play"></span></button>
+				</div>
+			</div>
 		</div>
 	</div>
       
@@ -233,5 +247,6 @@ scripts = '<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=f
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.js"></script>' + 
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.resize.min.js"></script>' + 
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.navigate.js"></script>' +
+'<script language="javascript" type="text/javascript" src="/flot/jquery.flot.crosshair.js"></script>' +
 '<script language="javascript" type="text/javascript" src="/view/' + log.id + '.js"></script>';
 %>

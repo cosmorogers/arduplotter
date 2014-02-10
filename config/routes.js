@@ -50,6 +50,11 @@ module.exports.routes = {
     action: 'log'
   },
 
+  'get /view' : {
+    controller : 'view',
+    action: 'browse'
+  },
+
   'get /view/:id': {
         controller    : 'view',
         action        : 'index'

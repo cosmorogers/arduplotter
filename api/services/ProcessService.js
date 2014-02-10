@@ -336,12 +336,11 @@ exports.process = function(json) {
     }
 
     //Clean up the last mode
-    processed.mode.modes[processed.mode.count].end = rowNum;
+    if (processed.mode.modes[processed.mode.count] != null) {
+        processed.mode.modes[processed.mode.count].end = rowNum;
+    }
 
-console.log(processed.gps.avgSpd);
-console.log(processed.gps.spd.length);
     processed.gps.avgSpd = processed.gps.avgSpd / processed.gps.spd.length;
-console.log(processed.gps.avgSpd);
 
     return processed;
 

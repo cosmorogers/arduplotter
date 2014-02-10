@@ -22,8 +22,7 @@ module.exports = {
 			processed = ProcessService.process(log.json);
 		  return res.view({
   			'log' : log,
-  			'processed' : processed,
-		  	active: 'view'
+  			'processed' : processed
 			});
     });
   },
@@ -41,6 +40,18 @@ module.exports = {
         res.contentType('text');
 				return res.send(log.raw.toString(), {}, 201);
       });
+  },
+
+  browse: function (req, res) {
+    Log.find().done(function(err, logs) {
+        if (err) {
+          console.log(err);
+        } else {
+          return res.view({
+            'logs' : logs
+          });
+        }
+    });
   },
 
 
