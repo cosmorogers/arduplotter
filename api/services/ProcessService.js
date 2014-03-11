@@ -213,10 +213,8 @@ exports.process = function(json) {
                     case 'GPS':
                         for (var i in row) {
                             var p = row[i].trim().toLowerCase();
-                            console.log(p, i, typeof processed.gps[p], (typeof processed.gps[p] != "undefined"));
                             if (typeof processed.gps[p] != "undefined") {
                                 processed.gps[p].col = i - 4;
-                                console.log(p + " is in col " + (i-4));
                             }
                         };
                         processed.gps.mapped = true;
@@ -375,18 +373,7 @@ exports.process = function(json) {
 
             case 'GPS':
                 processed.gps.exists = true;
-<<<<<<< HEAD
-                processed.gps.status.push( [rowNum, parseFloat(row[1])]);
-                processed.gps.time.push(   [rowNum, parseFloat(row[2])]);
-                processed.gps.nSats.push(  [rowNum, parseFloat(row[3])]);
-                processed.gps.hdop.push(   [rowNum, parseFloat(row[4])]);
-                processed.gps.lat.push(    [rowNum, parseFloat(row[6])]);
-                processed.gps.lng.push(    [rowNum, parseFloat(row[7])]);
-                processed.gps.relAlt.push( [rowNum, parseFloat(row[8])]);
-                processed.gps.alt.push(    [rowNum, parseFloat(row[9])]);
-                processed.gps.spd.push(    [rowNum, parseFloat(row[10])]);
-                processed.gps.gcrs.push(   [rowNum, parseFloat(row[11])]);
-=======
+
                 processed.gps.status.values.push( [rowNum, parseFloat(row[processed.gps.status.col])]);
                 processed.gps.time.values.push(   [rowNum, parseFloat(row[processed.gps.time.col])]);
                 processed.gps.nsats.values.push(  [rowNum, parseFloat(row[processed.gps.nsats.col])]);
@@ -397,18 +384,14 @@ exports.process = function(json) {
                 processed.gps.alt.values.push(    [rowNum, parseFloat(row[processed.gps.alt.col])]);
                 processed.gps.spd.values.push(    [rowNum, parseFloat(row[processed.gps.spd.col])]);
                 processed.gps.gcrs.values.push(   [rowNum, parseFloat(row[processed.gps.gcrs.col])]);
->>>>>>> 5db890ff26ca948faa1358e5cc02aed8bc7abfe6
+
                 
                 processed.gps.avgSpd += parseFloat(row[processed.gps.spd.col]);
                 processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.length]);
 
-<<<<<<< HEAD
-                processed.gps.googleMaps.push([parseFloat(row[6]),  parseFloat(row[7])]);
-=======
                 processed.gps.googleMaps.push([parseFloat(row[processed.gps.lat.col]),  parseFloat(row[processed.gps.lng.col])]);
 
                 processed.gps.readings.push(rowNum);
->>>>>>> 5db890ff26ca948faa1358e5cc02aed8bc7abfe6
                 break;
 
             case 'IMU':

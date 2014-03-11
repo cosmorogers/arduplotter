@@ -1,13 +1,15 @@
 <%
   title = 'Upload'
-  scripts = '<script src="/js/upload.js"></script>'
+  scripts = '<script language="javascript" type="text/javascript" src="/js/dropzone.js"></script>'+
+  '<script src="/js/upload.js"></script>'
 %>
-<div class="jumbotron">
+<div class="jumbotron" id="uploadDropzone">
   <div class="container">
     <p class="lead"><span class="glyphicon glyphicon-cloud-upload"></span> Drag and Drop your log here</p>
     <p class="small">Go on, you know you want to...</p>
   </div>
 </div>
+
 
 <div class="container">
 	<p>Magic box up there not working? <a href="#legacy" id="legacyUploadBtn">Click here</a></p>
@@ -27,3 +29,4 @@
 	</div>
 
 </div>
+

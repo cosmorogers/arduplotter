@@ -38,8 +38,13 @@ module.exports = {
               if (err) {
                 return console.log(err);
               } else {
-                console.log("log created:", data);
-                res.redirect('view/' + data.id);
+                //Check is json upload
+                console.log("log created:");
+                if (req.isAjax || req.isJson) {
+                  res.send({redirect: 'view/' + data.id});
+                } else {                
+                  res.redirect('view/' + data.id);
+                }
               }
             });
           });
