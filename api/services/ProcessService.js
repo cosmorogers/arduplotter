@@ -284,17 +284,17 @@ exports.process = function(json) {
                 processed.gps.time.push(   [rowNum, parseFloat(row[2])]);
                 processed.gps.nSats.push(  [rowNum, parseFloat(row[3])]);
                 processed.gps.hdop.push(   [rowNum, parseFloat(row[4])]);
-                processed.gps.lat.push(    [rowNum, parseFloat(row[5])]);
-                processed.gps.lng.push(    [rowNum, parseFloat(row[6])]);
-                processed.gps.relAlt.push( [rowNum, parseFloat(row[7])]);
-                processed.gps.alt.push(    [rowNum, parseFloat(row[8])]);
-                processed.gps.spd.push(    [rowNum, parseFloat(row[9])]);
-                processed.gps.gcrs.push(   [rowNum, parseFloat(row[10])]);
+                processed.gps.lat.push(    [rowNum, parseFloat(row[6])]);
+                processed.gps.lng.push(    [rowNum, parseFloat(row[7])]);
+                processed.gps.relAlt.push( [rowNum, parseFloat(row[8])]);
+                processed.gps.alt.push(    [rowNum, parseFloat(row[9])]);
+                processed.gps.spd.push(    [rowNum, parseFloat(row[10])]);
+                processed.gps.gcrs.push(   [rowNum, parseFloat(row[11])]);
                 
                 processed.gps.avgSpd += parseFloat(row[9]);
                 processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.length]);
 
-                processed.gps.googleMaps.push([parseFloat(row[5]),  parseFloat(row[6])]);
+                processed.gps.googleMaps.push([parseFloat(row[6]),  parseFloat(row[7])]);
                 break;
 
             case 'IMU':
