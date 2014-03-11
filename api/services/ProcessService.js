@@ -95,22 +95,58 @@ exports.process = function(json) {
         },
         gps: {
             exists: false,
-            status: [],
-            time: [],
-            nSats: [],
-            hdop: [],
-            lat: [],
-            lng: [],
-            relAlt: [],
-            alt: [],
-            spd: [],
-            gcrs: [],
-            avgSpd: 0,
+            mapped: false,
+            status: {
+                col: null,
+                values: [],
+            },
+            time: {
+                col: null,
+                values: [],
+            },
+            nsats: {
+                col: null,
+                values: [],
+            },
+            hdop: {
+                col: null,
+                values: [],
+            },
+            lat: {
+                col: null,
+                values: [],
+            },
+            lng: {
+                col: null,
+                values: [],
+            },
+            relalt: {
+                col: null,
+                values: [],
+            },
+            alt: {
+                col: null,
+                values: [],
+            },
+            spd: {
+                col: null,
+                values: [],
+            },
+            gcrs: {
+                col: null,
+                values: [],
+            },
+            avgSpd: {
+                col: null,
+                values: [],
+            },
             lAvgSpd: [],
             googleMaps: [],
+            readings: [],
         },
         imu: {
             exists: false,
+            timeMS: [],
             gyrX: [],
             gyrY: [],
             gyrZ: [],
@@ -170,6 +206,22 @@ exports.process = function(json) {
         switch (row[0]) {
             case 'PARM':
                 processed.params.push({'name': row[1], 'value': row[2]});
+                break;
+
+            case 'FMT':
+                switch (row[3].trim()) {
+                    case 'GPS':
+                        for (var i in row) {
+                            var p = row[i].trim().toLowerCase();
+                            console.log(p, i, typeof processed.gps[p], (typeof processed.gps[p] != "undefined"));
+                            if (typeof processed.gps[p] != "undefined") {
+                                processed.gps[p].col = i - 4;
+                                console.log(p + " is in col " + (i-4));
+                            }
+                        };
+                        processed.gps.mapped = true;
+                        break;
+                }
                 break;
 
             case 'ATT':
@@ -235,6 +287,7 @@ exports.process = function(json) {
                   type: 'unknown',
                   msg: 'unknown'
                 };
+                //http://copter.ardupilot.com/wiki/common-diagnosing-problems-using-logs/#Unexpected_ERRORS_including_Failsafes
                 switch(error.error) {
                   case 1: //Main (never used)
                     break;
@@ -247,10 +300,18 @@ exports.process = function(json) {
                     }
                     break;
                   case 3:
+                    error.type = "Compass";
                     break;
                   case 4:
+                    error.type = "Optical flow";
                     break;
                   case 5:
+                    error.type = "Throttle failsafe";
+                    if (error.eCode = 1) {
+                        error.msg = "throttle dropped below FS_THR_VALUE meaning likely loss of contact between RX/TX";
+                    } else if (error.eCode = 0) {
+                        error.msg = "above error resolve meaning RX/TX contact likely restored";
+                    }
                     break;
                   case 6: //Battery failsafe
                     error.type = "Battery failsafe"
@@ -259,16 +320,50 @@ exports.process = function(json) {
                     }
                     break;
                   case 7:
+                    error.type = "GPS failsafe";
+                    var flightModeErrs = [
+                        "GPS lock restored",
+                        "GPS lock lost for at least 5 seconds"
+                    ];
+                    error.msg = flightModeErrs[error.eCode];
                     break;
                   case 8:
+                    error.type = "GCS (Ground station) failsafe";
                     break;
                   case 9:
+                    error.type = "Fence";
                     break;
                   case 10:
+                    error.type = "Flight Mode";
+                    var flightModeErrs = [
+                        "the vehicle was unable to enter the Stabilize flight mode",
+                        "the vehicle was unable to enter the Acro flight mode",
+                        "the vehicle was unable to enter the AltHold flight mode",
+                        "the vehicle was unable to enter the Auto flight mode",
+                        "the vehicle was unable to enter the Guided flight mode",
+                        "the vehicle was unable to enter the Loiter flight mode",
+                        "the vehicle was unable to enter the RTL flight mode",
+                        "the vehicle was unable to enter the Circle flight mode",
+                        "the vehicle was unable to enter the Position flight mode",
+                        "the vehicle was unable to enter the Land flight mode",
+                        "the vehicle was unable to enter the OF_Loiter flight mode"
+                    ];
+                    error.msg = flightModeErrs[error.eCode];
                     break;
                   case 11:
+                    error.type = "GPS";
+                    var flightModeErrs = [
+                        "GPS Glitch cleared",
+                        "",
+                        "GPS Glitch"
+                    ];
+                    error.msg = flightModeErrs[error.eCode];
                     break;
                   case 12:
+                    error.type = "Crash Check";
+                    if (error.eCode == 1) {
+                        error.msg = "Crash detected";
+                    }
                     break;
                 }
                 processed.err.errs.push(error);
@@ -280,25 +375,34 @@ exports.process = function(json) {
 
             case 'GPS':
                 processed.gps.exists = true;
-                processed.gps.status.push( [rowNum, parseFloat(row[1])]);
-                processed.gps.time.push(   [rowNum, parseFloat(row[2])]);
-                processed.gps.nSats.push(  [rowNum, parseFloat(row[3])]);
-                processed.gps.hdop.push(   [rowNum, parseFloat(row[4])]);
-                processed.gps.lat.push(    [rowNum, parseFloat(row[5])]);
-                processed.gps.lng.push(    [rowNum, parseFloat(row[6])]);
-                processed.gps.relAlt.push( [rowNum, parseFloat(row[7])]);
-                processed.gps.alt.push(    [rowNum, parseFloat(row[8])]);
-                processed.gps.spd.push(    [rowNum, parseFloat(row[9])]);
-                processed.gps.gcrs.push(   [rowNum, parseFloat(row[10])]);
+                processed.gps.status.values.push( [rowNum, parseFloat(row[processed.gps.status.col])]);
+                processed.gps.time.values.push(   [rowNum, parseFloat(row[processed.gps.time.col])]);
+                processed.gps.nsats.values.push(  [rowNum, parseFloat(row[processed.gps.nsats.col])]);
+                processed.gps.hdop.values.push(   [rowNum, parseFloat(row[processed.gps.hdop.col])]);
+                processed.gps.lat.values.push(    [rowNum, parseFloat(row[processed.gps.lat.col])]);
+                processed.gps.lng.values.push(    [rowNum, parseFloat(row[processed.gps.lng.col])]);
+                processed.gps.relalt.values.push( [rowNum, parseFloat(row[processed.gps.relalt.col])]);
+                processed.gps.alt.values.push(    [rowNum, parseFloat(row[processed.gps.alt.col])]);
+                processed.gps.spd.values.push(    [rowNum, parseFloat(row[processed.gps.spd.col])]);
+                processed.gps.gcrs.values.push(   [rowNum, parseFloat(row[processed.gps.gcrs.col])]);
                 
-                processed.gps.avgSpd += parseFloat(row[9]);
+                processed.gps.avgSpd += parseFloat(row[processed.gps.spd.col]);
                 processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.length]);
 
-                processed.gps.googleMaps.push([parseFloat(row[5]),  parseFloat(row[6])]);
+                processed.gps.googleMaps.push([parseFloat(row[processed.gps.lat.col]),  parseFloat(row[processed.gps.lng.col])]);
+
+                processed.gps.readings.push(rowNum);
                 break;
 
             case 'IMU':
-
+                processed.imu.exists = true;
+                processed.imu.timeMS.push( [rowNum, parseFloat(row[1])]);
+                processed.imu.gyrX.push( [rowNum, parseFloat(row[2])]);
+                processed.imu.gyrY.push( [rowNum, parseFloat(row[3])]);
+                processed.imu.gyrZ.push( [rowNum, parseFloat(row[4])]);
+                processed.imu.accX.push( [rowNum, parseFloat(row[5])]);
+                processed.imu.accY.push( [rowNum, parseFloat(row[6])]);
+                processed.imu.accZ.push( [rowNum, parseFloat(row[7])]);
                 break;
 
             case 'INAV':

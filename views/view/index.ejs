@@ -39,6 +39,7 @@
 				<% if (processed.ctun.exists) { %><li><a href="#altitude" data-toggle="tab">Altitude</a></li><% } %>
 				<% if (processed.att.exists) { %><li><a href="#attitude" data-toggle="tab">Attitude</a></li><% } %>
 				<% if (processed.gps.exists) { %><li><a href="#gps" data-toggle="tab">GPS</a></li><% } %>
+				<% if (processed.imu.exists) { %><li><a href="#imu" data-toggle="tab">IMU</a></li><% } %>
 				<li class="active"><a href="#messages" data-toggle="tab">Messages</a></li>
 				<li><a href="#params" data-toggle="tab">Params</a></li>
 			</ul>
@@ -200,6 +201,22 @@
 					</div>
 	      </div><!-- /gps tab -->
 	      <% } %>
+
+				<% if (processed.imu.exists) { %>
+	      <div class="tab-pane" id="imu">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+									<h3 class="panel-title">Vibrations</h3>
+								</div>
+								<div class="panel-body"><div id="vibrations-graph"  style="width:100%;height:300px;"></div></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<% } %>
 
 				<div class="tab-pane active" id="messages">
 	      	<div class="alert alert-success">
