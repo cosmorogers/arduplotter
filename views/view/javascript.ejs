@@ -1,3 +1,5 @@
+var data = <%- JSON.stringify(processed) %>;
+
 <%
 	var backgroundColours = {
 		'ALT_HOLD': '#e7b1b2',
@@ -85,14 +87,14 @@ $(function() {
 	/****************************************
 	 *               Altitude               *
 	 ****************************************/
-	$.plot('#altitude-graph',[<% if (processed.gps.exists) { %>
+	ploty = $.plot('#altitude-graph',[<% if (processed.gps.exists) { %>
 		{
 			label: 'GPS', 
-			data: <%- JSON.stringify(processed.gps.alt) %>,
+			data: <%- JSON.stringify(processed.gps.alt.values) %>,
 			color: colours[0],
 		}, {
 			label: 'GPS Rel', 
-			data: <%- JSON.stringify(processed.gps.relAlt) %>,
+			data: <%- JSON.stringify(processed.gps.relalt.values) %>,
 			color: colours[2],
 		}, <% } %>{
 			label: 'Sonar', 
@@ -115,18 +117,31 @@ $(function() {
 	  }
   );
 
+	var readings = <%- JSON.stringify(processed.gps.readings) %>;
+
   $("#altitude-graph").bind("plothover", function (event, posi, item) {
-  	if (item !== null) {
-  		//console.log(event, pos, item);
+  	var x = parseInt(posi.x),
+  	indexOf = readings.indexOf(x);
+  	if (indexOf == -1) {
+  		//Not found
+  		var found = 0;
+  		for (var k in readings) {
+  			if (readings[k] > x) {
+  				found = k;
+  				//found the one higher
+  				break;
+  			}
+  		}
+  		indexOf = k;
+  	} 
 
-			var pos = app.flightPath.getPath().getAt(item.dataIndex);
-			if (typeof pos != "undefined") {
-				app.marker.setPosition(new google.maps.LatLng(pos.lat(), pos.lng()));
-			} else {
-				console.log(pos, item.dataIndex);
-			}
+		var pos = app.flightPath.getPath().getAt(indexOf);
+		if (typeof pos != "undefined") {
+			app.marker.setPosition(new google.maps.LatLng(pos.lat(), pos.lng()));
+		} else {
+			console.log(pos, indexOf);
+		}
 
-  	}
   });
 
 	$.plot('#throttle-graph',[
@@ -246,12 +261,12 @@ $(function() {
 	$.plot('#gps-status-graph',[
 			{
 				label: 'Status', 
-				data: <%- JSON.stringify(processed.gps.status) %>,
+				data: <%- JSON.stringify(processed.gps.status.values) %>,
 				color: colours[0],
 			},
 			{
 				label: 'HDop', 
-				data: <%- JSON.stringify(processed.gps.hdop) %>,
+				data: <%- JSON.stringify(processed.gps.hdop.values) %>,
 				color: colours[1],
 			}
 		], {
@@ -267,7 +282,7 @@ $(function() {
 	$.plot('#gps-satellites-graph',[
 			{
 				label: 'Satellites', 
-				data: <%- JSON.stringify(processed.gps.nSats) %>,
+				data: <%- JSON.stringify(processed.gps.nsats.values) %>,
 				color: colours[0],
 			}
 		], {
@@ -283,7 +298,7 @@ $(function() {
 	$.plot('#gps-speed-graph',[
 			{
 				label: 'Speed', 
-				data: <%- JSON.stringify(processed.gps.spd) %>,
+				data: <%- JSON.stringify(processed.gps.spd.values) %>,
 				color: colours[0],
 			},
 			{
@@ -343,6 +358,45 @@ $(function() {
 
 
 <% } /* gps */%>
+
+<% if (processed.imu.exists) { %>
+	/****************************************
+	 *                 GPS                  *
+	 ****************************************/
+	$.plot('#vibrations-graph',[
+			{
+				label: 'AccX', 
+				data: <%- JSON.stringify(processed.imu.accX) %>,
+				color: colours[0],
+			},
+			{
+				label: 'AccY', 
+				data: <%- JSON.stringify(processed.imu.accY) %>,
+				color: colours[1],
+			},
+			{
+				label: 'AccZ', 
+				data: <%- JSON.stringify(processed.imu.accZ) %>,
+				color: colours[2],
+			},
+			{ color: "#000", lineWidth: 1, yaxis: { from: 3, to: 3 } },
+			{ color: "#000", lineWidth: 1, yaxis: { from: -3, to: -3 } }
+		], {
+	    grid: {
+	      backgroundColor: { colors: ["#fff", "#eee"] },
+	      markings: <%- JSON.stringify(markings) %>
+	    },
+	    series: { shadowSize: 0 },
+	    xaxis: { ticks:[] },
+	    zoom: {
+				interactive: true
+			},
+			pan: {
+				interactive: true
+			}
+	  }
+  );
+<% } %>
 
 app.play = function(i) {
 	var pos = app.flightPath.getPath().getAt(i);

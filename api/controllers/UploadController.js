@@ -31,7 +31,7 @@ module.exports = {
           .to.array( function(processedata){
             Log.create({
               filename: req.files.log.name,
-              raw: data,
+//              raw: data,
               json: processedata
             }).done(function(err, data) {
               // Error handling
