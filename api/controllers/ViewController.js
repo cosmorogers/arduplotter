@@ -42,6 +42,14 @@ module.exports = {
       });
   },
 
+  kml: function (req, res) {
+      return loadLog(req, res, function(req, res, log) {
+        processed = ProcessService.process(log.json);
+        res.contentType('application/vnd.google-earth.kml+xml');
+        return res.view('view/kml', {'processed' : processed, layout: null});
+      });
+  },
+
   browse: function (req, res) {
     Log.find().done(function(err, logs) {
         if (err) {

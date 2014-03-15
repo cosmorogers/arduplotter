@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Flight path</name>
+    <description>Flight path</description>
+    <Style id="yellowLineGreenPoly">
+      <LineStyle>
+        <color>7f00ffff</color>
+        <width>4</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7f00ff00</color>
+      </PolyStyle>
+    </Style>
+    <Folder>
+      <name>Log</name>
+      <Placemark>
+        <name>Flight Path</name>
+        <description>Flight path</description>
+        <styleUrl>#yellowLineGreenPoly</styleUrl>
+        <LineString>
+          <extrude>1</extrude>
+          <tessellate>1</tessellate>
+          <altitudeMode>relativeToGround</altitudeMode>
+          <coordinates>
+            <% for( var i in processed.gps.lat.values) { %><%= processed.gps.lng.values[i][1] %>,<%= processed.gps.lat.values[i][1] %>,<%= processed.gps.relalt.values[i][1] %> <% } %>
+          </coordinates>
+        </LineString>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml> 

@@ -2,7 +2,7 @@
 exports.process = function(json) {
 
     var processed = {
-        params: [],
+        params: {},
         att: {
             exists: false,
             rollIn: [],
@@ -72,6 +72,8 @@ exports.process = function(json) {
             curr: [],
             vcc: [],
             currTot: [],
+            totcur: 0,
+            avgcur: 0,
         },
         ctun: {
             exists: false,
@@ -136,10 +138,7 @@ exports.process = function(json) {
                 col: null,
                 values: [],
             },
-            avgSpd: {
-                col: null,
-                values: [],
-            },
+            avgSpd: 0,
             lAvgSpd: [],
             googleMaps: [],
             readings: [],
@@ -205,7 +204,8 @@ exports.process = function(json) {
         
         switch (row[0]) {
             case 'PARM':
-                processed.params.push({'name': row[1], 'value': row[2]});
+                var name = row[1].trim().toLowerCase();
+                processed.params[name] = {'name': row[1], 'value': row[2]};
                 break;
 
             case 'FMT':
@@ -262,6 +262,10 @@ exports.process = function(json) {
                 processed.current.curr.push(    [rowNum, row[4]/100]);
                 processed.current.vcc.push(     [rowNum, row[5]/1000]);
                 processed.current.currTot.push( [rowNum, parseFloat(row[6])]);
+
+                processed.current.avgcur += parseFloat(row[4]/100);
+                processed.current.totcur =  parseFloat(row[6]);
+
                 break;
 
             case 'CTUN':
@@ -385,9 +389,8 @@ exports.process = function(json) {
                 processed.gps.spd.values.push(    [rowNum, parseFloat(row[processed.gps.spd.col])]);
                 processed.gps.gcrs.values.push(   [rowNum, parseFloat(row[processed.gps.gcrs.col])]);
 
-                
                 processed.gps.avgSpd += parseFloat(row[processed.gps.spd.col]);
-                processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.length]);
+                processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.values.length]);
 
                 processed.gps.googleMaps.push([parseFloat(row[processed.gps.lat.col]),  parseFloat(row[processed.gps.lng.col])]);
 
@@ -444,7 +447,9 @@ exports.process = function(json) {
         processed.mode.modes[processed.mode.count].end = rowNum;
     }
 
-    processed.gps.avgSpd = processed.gps.avgSpd / processed.gps.spd.length;
+    processed.gps.avgSpd = (processed.gps.avgSpd / processed.gps.spd.values.length).toFixed(2);
+    processed.current.avgcur = (processed.current.avgcur / processed.current.curr.length).toFixed(2);
+    processed.current.totcur = processed.current.totcur.toFixed(2);
 
     return processed;
 

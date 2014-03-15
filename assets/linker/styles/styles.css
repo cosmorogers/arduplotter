@@ -38,3 +38,24 @@ body {
   width: 100%;
   height: 450px;
 }
+
+.callout {
+  border-left: 3px solid #EEEEEE;
+  margin: 20px 0;
+  padding: 20px;
+}
+.callout h4 {
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+.callout-info {
+  background-color: #F4F8FA;
+  border-color: #5BC0DE;
+}
+.callout-info h4 {
+  color: #5BC0DE;
+}
