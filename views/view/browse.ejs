@@ -5,11 +5,12 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-
+			<h1>Previously Uploaded Logs</h1>
 			<table class="table">
 				<thead>
 					<tr>
 						<th>Date</th>
+						<th>Uploader</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -17,8 +18,9 @@
 				<% for(var k in logs) { %>
 					<tr>
 						<td><%= logs[k].createdAt %></td>
+						<td>N/A</td>
 						<td>
-							<a href="/view/<%= logs[k].id %>" class="btn btn-default">Link</a>
+							<a href="/view/<%= logs[k].id %>" class="btn btn-default pull-right">Go &raquo;</a>
 						</td>
 					</tr>
 				<% } %>

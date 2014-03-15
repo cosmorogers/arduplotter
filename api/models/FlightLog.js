@@ -9,8 +9,8 @@
 module.exports = {
 
   attributes: {
-
-  	raw:   'BINARY'
+  	filename: 'STRING',
+  	createdAt: 'DATE'
     
   }
 

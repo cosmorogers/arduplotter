@@ -51,15 +51,42 @@ module.exports = {
   },
 
   browse: function (req, res) {
-    Log.find().done(function(err, logs) {
+    var perPage = 1;
+    var page = 1;
+
+    FlightLog.count(function(err, num) {
+      if (!err) {
+        var count = num;
+        
+        FlightLog.find()
+          .sort('createdAt DESC')
+          .exec(function(err, logs) {
+            if (err) {
+              console.log(err);
+            } else {
+              return res.view({
+                'count': count,
+                'page' : page,
+                'logs' : logs
+              });
+            }
+        });
+      }
+    })
+
+    
+
+    /*Log.find({
+      sort : 'filename ASC'
+    }).done(function(err, logs) {
         if (err) {
-          console.log(err);
+          console.log("ERROR: ", err);
         } else {
           return res.view({
             'logs' : logs
           });
         }
-    });
+    });*/
   },
 
 
@@ -74,7 +101,7 @@ module.exports = {
 
 function loadLog(req, res, cb) {
   if (req.param('id')) {
-    Log.findOne(req.param('id'))
+    FlightLog.findOne(req.param('id'))
     .done(function(err, log) {
       if (err) {
         return res.send(404, {error: 'Not Found error'});

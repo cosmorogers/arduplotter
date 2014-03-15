@@ -39,6 +39,7 @@ body {
   height: 450px;
 }
 
+/* Stolen with love from getbootstrap.com! */
 .callout {
   border-left: 3px solid #EEEEEE;
   margin: 20px 0;
@@ -58,4 +59,35 @@ body {
 }
 .callout-info h4 {
   color: #5BC0DE;
+}
+.callout-danger {
+    background-color: #FDF7F7;
+    border-color: #D9534F;
+}
+.callout-danger h4 {
+    color: #D9534F;
+}
+
+.step {
+    border: 2px solid;
+    border-radius: 60px;
+    font-size: 30px;
+    height: 100px;
+    margin: 0 auto;
+    padding-top: 27px;
+    text-align: center;
+    vertical-align: middle;
+    width: 100px;
+}
+.step-1 {
+  color: #3A87AD;
+  border-color: #3A87AD;
+}
+.step-2 {
+  color: #2FA4E7;
+  border-color: #2FA4E7;
+}
+.step-3 {
+  color: #468847;
+  border-color: #468847;
 }

@@ -29,7 +29,7 @@ module.exports = {
         csv()
           .from.string(data.toString(), {comment: '#'})
           .to.array( function(processedata){
-            Log.create({
+            FlightLog.create({
               filename: req.files.log.name,
 //              raw: data,
               json: processedata
