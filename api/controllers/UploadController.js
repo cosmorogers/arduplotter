@@ -21,38 +21,56 @@ module.exports = {
     if (req.method === 'POST') {
       var fs = require('fs');       
       // read temporary file
-      fs.readFile(req.files.log.path, function (err, data) {
-        //console.log(data);
-        // save file
+      //Validate uploaded file
+      var mime = require('mime');
 
-        var csv = require('csv');
-        csv()
-          .from.string(data.toString(), {comment: '#'})
-          .to.array( function(processedata){
-            FlightLog.create({
-              filename: req.files.log.name,
-//              raw: data,
-              json: processedata
-            }).done(function(err, data) {
-              // Error handling
-              if (err) {
-                return console.log(err);
-              } else {
-                //Check is json upload
-                console.log("log created:");
-                if (req.isAjax || req.isJson) {
-                  res.send({redirect: 'view/' + data.id});
-                } else {                
-                  res.redirect('view/' + data.id);
+      if (mime.lookup(req.files.flightlog.path) == 'text/plain') {
+
+        fs.readFile(req.files.flightlog.path, function (err, data) {
+          //console.log(data);
+          // save file
+
+          var csv = require('csv');
+          csv()
+            .from.string(data.toString(), {comment: '#'})
+            .to.array( function(processedata){
+              FlightLog.create({
+                filename: req.files.flightlog.name,
+  //              raw: data,
+                json: processedata
+              }).done(function(err, data) {
+                // Error handling
+                if (err) {
+                  return console.log(err);
+                } else {
+                  //Check is json upload
+                  console.log("log created");
+                  if (req.isAjax || req.isJson) {
+                    res.send({redirect: 'view/' + data.id});
+                  } else {                
+                    res.redirect('view/' + data.id);
+                  }
                 }
-              }
+              });
             });
+        });
+
+      } else {
+        //Not a plain text file
+        if (req.isAjax || req.isJson) {
+          return res.send({error: 'invalid'});
+        } else {                
+          return res.view({
+            active: 'upload',
+            error: true
           });
-      });
+        }
+      }
     } else {
       // Send a JSON response
       return res.view({
-        active: 'upload'
+        active: 'upload',
+        error: false
       });
     }
   },

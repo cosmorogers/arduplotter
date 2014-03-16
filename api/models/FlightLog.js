@@ -10,7 +10,10 @@ module.exports = {
 
   attributes: {
   	filename: 'STRING',
-  	createdAt: 'DATE'
+  	createdAt: {
+  		type: 'DATE',
+  		index: true
+  	}
     
   }
 

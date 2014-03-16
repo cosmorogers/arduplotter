@@ -38,7 +38,7 @@ module.exports = {
   log: function (req, res) {
       return loadLog(req, res, function(req, res, log) {
         res.contentType('text');
-				return res.send(log.raw.toString(), {}, 201);
+        return res.view('view/log', {'json' : log.json, layout: null});
       });
   },
 
@@ -59,7 +59,7 @@ module.exports = {
         var count = num;
         
         FlightLog.find()
-          .sort('createdAt DESC')
+         // .sort('createdAt DESC')
           .exec(function(err, logs) {
             if (err) {
               console.log(err);
@@ -104,16 +104,18 @@ function loadLog(req, res, cb) {
     FlightLog.findOne(req.param('id'))
     .done(function(err, log) {
       if (err) {
-        return res.send(404, {error: 'Not Found error'});
+            console.log("not found", res);
+
+        return res.notfound();
 	    } else {
         if (typeof log == 'undefined') {
-          return res.send(404, {error: 'Not Found'});
+          return res.notfound();
         } else {
           return cb(req, res, log);
         }
       }
     });
   } else {
-    return res.send(404, {error: 'Not Found missing'});
+    return res.notfound();
   }
 }

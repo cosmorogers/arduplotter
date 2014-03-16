@@ -407,9 +407,15 @@ app.play = function(i) {
 	}
 
 	if (i < app.flightPath.getPath().length) {
-		setTimeout(function() {
+		app.playTimeout = setTimeout(function() {
 			app.play(i+1);
 		}, 50);
+	}
+}
+
+app.stop = function() {
+	if (app.playTimeout) {
+		clearTimeout(app.playTimeout);
 	}
 }
 

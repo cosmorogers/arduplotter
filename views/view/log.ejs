@@ -1,0 +1,6 @@
+<% for( var i in json) { 
+	var txt = [];
+	for(var k in json[i]) { 
+		txt.push(json[i][k]);
+	}%><%= txt.join(',') %>
+<% } %>
