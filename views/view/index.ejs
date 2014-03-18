@@ -44,7 +44,7 @@
 			</div>
 
 			<ul class="nav nav-tabs">
-				<% if (processed.current.exists) { %><li><a href="#power" data-toggle="tab">Power</a></li><% } %>
+				<% if (processed.curr.exists) { %><li><a href="#power" data-toggle="tab">Power</a></li><% } %>
 				<% if (processed.ctun.exists) { %><li><a href="#altitude" data-toggle="tab">Altitude</a></li><% } %>
 				<% if (processed.att.exists) { %><li><a href="#attitude" data-toggle="tab">Attitude</a></li><% } %>
 				<% if (processed.gps.exists) { %><li><a href="#gps" data-toggle="tab">GPS</a></li><% } %>
@@ -57,7 +57,7 @@
 
 			<div class="tab-content">
          
-        <% if (processed.current.exists) { %>
+        <% if (processed.curr.exists) { %>
 				<div class="tab-pane" id="power">
 					<div class="row">
 						<div class="col-md-6">
@@ -68,7 +68,7 @@
 								</div>
 								<div class="panel-body">
 									<div id="totcurrent-graph"  style="width:100%;height:300px;"></div>
-									<p><strong>Total Current Used</strong> <%= processed.current.totcur %> mA</p>
+									<p><strong>Total Current Used</strong> <%= processed.curr.totcur %> mA</p>
 								</div>
 							</div>
 						</div>
@@ -80,7 +80,7 @@
 								</div>
 								<div class="panel-body">
 									<div id="current-graph"  style="width:100%;height:300px;"></div>
-									<p><strong>Average Current</strong> <%= processed.current.avgcur %> A</p>
+									<p><strong>Average Current</strong> <%= processed.curr.avgcur %> A</p>
 								</div>
 							</div>
 						</div>
@@ -118,14 +118,14 @@
 									  <div class="form-group">
 									    <label for="currentDrawInput" class="col-sm-4 control-label">Average Current Draw</label>
 							        <div class="col-sm-8">
-									    	<input type="number" class="form-control" id="currentDrawInput" value="<%= processed.current.avgcur %>" disabled>
+									    	<input type="number" class="form-control" id="currentDrawInput" value="<%= processed.curr.avgcur %>" disabled>
 								    	</div>
 									  </div>
 									  <div class="form-group">
 									    <label for="currentDrawInput" class="col-sm-4 control-label">Estimated Flight Duration</label>
 									    <div class="col-sm-8">
 												<div class="input-group">
-										    	<input type="number" class="form-control" id="currentDrawInput" value="<%= parseFloat(((capacity / 1000 / processed.current.avgcur) * 60 ) * 0.8).toFixed(2) %>" disabled>
+										    	<input type="number" class="form-control" id="currentDrawInput" value="<%= parseFloat(((capacity / 1000 / processed.curr.avgcur) * 60 ) * 0.8).toFixed(2) %>" disabled>
 													<span class="input-group-addon">mins</span>
 												</div>
 											</div>
@@ -146,7 +146,7 @@
 				</div><!-- /power tab -->
 				<% } %>
 	          
-				<% if (processed.current.exists) { %>
+				<% if (processed.curr.exists) { %>
 	      <div class="tab-pane" id="altitude">
 					<div class="row">
 						<div class="col-md-6">

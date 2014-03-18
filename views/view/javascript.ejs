@@ -28,14 +28,14 @@ $(function() {
 		}
 	});
 
-<% if (processed.current.exists) { %>
+<% if (processed.curr.exists) { %>
 	/****************************************
 	 *                Power                 *
 	 ****************************************/
 	$.plot('#current-graph',[
 	{
 		label: 'Current', 
-		data: <%= JSON.stringify(processed.current.curr) %>,
+		data: <%= JSON.stringify(processed.curr.curr.values) %>,
 		color: colours[0],
 	}], {
     grid: {
@@ -49,7 +49,7 @@ $(function() {
   $.plot('#totcurrent-graph',[
 	{
 		label: 'Total Current', 
-		data: <%= JSON.stringify(processed.current.currTot) %>,
+		data: <%= JSON.stringify(processed.curr.currtot.values) %>,
 		color: colours[0],
 	}], {
     grid: {
@@ -63,11 +63,11 @@ $(function() {
 	$.plot('#voltage-graph',[
 	{
 		label: 'Voltage', 
-		data: <%= JSON.stringify(processed.current.volt) %>,
+		data: <%= JSON.stringify(processed.curr.volt.values) %>,
 		color: colours[0],
 	}, {
 		label: 'Board Voltage', 
-		data: <%= JSON.stringify(processed.current.vcc) %>,
+		data: <%= JSON.stringify(processed.curr.vcc.values) %>,
 		color: colours[1]
 	}], {
     grid: {
@@ -98,11 +98,11 @@ $(function() {
 			color: colours[2],
 		}, <% } %>{
 			label: 'Sonar', 
-			data: <%- JSON.stringify(processed.ctun.sonAlt) %>,
+			data: <%- JSON.stringify(processed.ctun.sonalt.values) %>,
 			color: colours[3],
 		}, {
 			label: 'Barometer', 
-			data: <%- JSON.stringify(processed.ctun.barAlt) %>,
+			data: <%- JSON.stringify(processed.ctun.baralt.values) %>,
 			color: colours[1],
 		}
 		], {
@@ -147,11 +147,11 @@ $(function() {
 	$.plot('#throttle-graph',[
 	{
 		label: 'In', 
-		data: <%- JSON.stringify(processed.ctun.thrIn) %>,
+		data: <%- JSON.stringify(processed.ctun.thrin.values) %>,
 		color: colours[0],
 	}, {
 		label: 'Out', 
-		data: <%- JSON.stringify(processed.ctun.thrOut) %>,
+		data: <%- JSON.stringify(processed.ctun.throut.values) %>,
 		color: colours[1],
 	}
 	], {
@@ -166,11 +166,11 @@ $(function() {
   $.plot('#crate-graph',[
 	{
 		label: 'Climb Rate', 
-		data: <%- JSON.stringify(processed.ctun.cRate) %>,
+		data: <%- JSON.stringify(processed.ctun.crate.values) %>,
 		color: colours[0],
 	}, {
 		label: 'Desired Climb Rate', 
-		data: <%- JSON.stringify(processed.ctun.dcRate) %>,
+		data: <%- JSON.stringify(processed.ctun.dcrate.values) %>,
 		color: colours[1],
 	}
 	], {
@@ -191,11 +191,11 @@ $(function() {
 	$.plot('#attitude-roll-graph',[
 			{
 				label: 'Roll In', 
-				data: <%- JSON.stringify(processed.att.rollIn) %>,
+				data: <%- JSON.stringify(processed.att.rollin.values) %>,
 				color: colours[0],
 			}, {
 				label: 'Roll', 
-				data: <%- JSON.stringify(processed.att.roll) %>,
+				data: <%- JSON.stringify(processed.att.roll.values) %>,
 				color: colours[1],
 			}
 		], {
@@ -211,11 +211,11 @@ $(function() {
 	$.plot('#attitude-pitch-graph',[
 			{
 				label: 'Pitch In', 
-				data: <%- JSON.stringify(processed.att.pitchIn) %>,
+				data: <%- JSON.stringify(processed.att.pitchin.values) %>,
 				color: colours[0],
 			}, {
 				label: 'Pitch', 
-				data: <%- JSON.stringify(processed.att.pitch) %>,
+				data: <%- JSON.stringify(processed.att.pitch.values) %>,
 				color: colours[1],
 			}
 		], {
@@ -231,15 +231,15 @@ $(function() {
 	$.plot('#attitude-yaw-graph',[
 			{
 				label: 'Yaw In', 
-				data: <%- JSON.stringify(processed.att.yawIn) %>,
+				data: <%- JSON.stringify(processed.att.yawin.values) %>,
 				color: colours[0],
 			}, {
 				label: 'Yaw', 
-				data: <%- JSON.stringify(processed.att.yaw) %>,
+				data: <%- JSON.stringify(processed.att.yaw.values) %>,
 				color: colours[1],
 			}, {
 				label: 'Nav Yaw', 
-				data: <%- JSON.stringify(processed.att.navYaw) %>,
+				data: <%- JSON.stringify(processed.att.navyaw.values) %>,
 				color: colours[2],
 			}
 		], {
@@ -366,20 +366,20 @@ $(function() {
 	$.plot('#vibrations-graph',[
 			{
 				label: 'AccX', 
-				data: <%- JSON.stringify(processed.imu.accX) %>,
+				data: <%- JSON.stringify(processed.imu.accx.values) %>,
 				color: colours[0],
 			},
 			{
 				label: 'AccY', 
-				data: <%- JSON.stringify(processed.imu.accY) %>,
+				data: <%- JSON.stringify(processed.imu.accy.values) %>,
 				color: colours[1],
 			},
 			{
 				label: 'AccZ', 
-				data: <%- JSON.stringify(processed.imu.accZ) %>,
+				data: <%- JSON.stringify(processed.imu.accz.values) %>,
 				color: colours[2],
 			},
-			{ color: "#000", lineWidth: 1, yaxis: { from: 3, to: 3 } },
+			{ color: "#000", lineWidth: 1, yaxis: { from: 3, to: 3 }, label: 'b'},
 			{ color: "#000", lineWidth: 1, yaxis: { from: -3, to: -3 } }
 		], {
 	    grid: {

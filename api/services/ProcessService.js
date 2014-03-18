@@ -1,17 +1,29 @@
 // ProcessService.js - in api/services
 exports.process = function(json) {
+    var nameMappings = {
+        'ctun' : {
+            'dcrt' : 'dcrate',
+            'crt'  : 'crate',
+        },
+        'att' : {
+            'desroll' : 'rollin',
+            'despitch' : 'pitchin',
+            'desyaw' : 'yawin',
+        }
+    }
 
     var processed = {
         params: {},
         att: {
             exists: false,
-            rollIn: [],
-            roll: [],
-            pitchIn: [],
-            pitch: [],
-            yawIn: [],
-            yaw: [],
-            navYaw: []
+            mapped: false,
+            rollin:  { col: null, values: [] },
+            roll:    { col: null, values: [] },
+            pitchin: { col: null, values: [] },
+            pitch:   { col: null, values: [] },
+            yawin:   { col: null, values: [] },
+            yaw:     { col: null, values: [] },
+            navyaw:  { col: null, values: [] },
         },
         atun: {
             exists: false,
@@ -64,28 +76,30 @@ exports.process = function(json) {
             mofsY: [],
             mofsZ: []
         },
-        current: {
-            exists: false,
-            thr: [],
-            thrInt: [],
-            volt: [],
-            curr: [],
-            vcc: [],
-            currTot: [],
+        curr: {
+            exists:  false,
+            mapped:  false,
+            thr:     { col: null, values: [] },
+            thrint:  { col: null, values: [] },
+            volt:    { col: null, values: [] },
+            curr:    { col: null, values: [] },
+            vcc:     { col: null, values: [] },
+            currtot: { col: null, values: [] },
             totcur: 0,
             avgcur: 0,
         },
         ctun: {
             exists: false,
-            thrIn: [],
-            sonAlt: [],
-            barAlt: [],
-            wpAlt: [],
-            navThr: [],
-            angBst: [],
-            cRate: [],
-            thrOut: [],
-            dcRate: []
+            mapped: false,
+            thrin:  { col: null, values: [] },
+            sonalt: { col: null, values: [] },
+            baralt: { col: null, values: [] },
+            wpalt:  { col: null, values: [] },
+            navthr: { col: null, values: [] },
+            angbst: { col: null, values: [] },
+            crate:  { col: null, values: [] },
+            throut: { col: null, values: [] },
+            dcrate: { col: null, values: [] }
         },
         err: {
             exists: false,
@@ -98,46 +112,16 @@ exports.process = function(json) {
         gps: {
             exists: false,
             mapped: false,
-            status: {
-                col: null,
-                values: [],
-            },
-            time: {
-                col: null,
-                values: [],
-            },
-            nsats: {
-                col: null,
-                values: [],
-            },
-            hdop: {
-                col: null,
-                values: [],
-            },
-            lat: {
-                col: null,
-                values: [],
-            },
-            lng: {
-                col: null,
-                values: [],
-            },
-            relalt: {
-                col: null,
-                values: [],
-            },
-            alt: {
-                col: null,
-                values: [],
-            },
-            spd: {
-                col: null,
-                values: [],
-            },
-            gcrs: {
-                col: null,
-                values: [],
-            },
+            status: { col: null, values: [] },
+            time:   { col: null, values: [] },
+            nsats:  { col: null, values: [] },
+            hdop:   { col: null, values: [] },
+            lat:    { col: null, values: [] },
+            lng:    { col: null, values: [] },
+            relalt: { col: null, values: [] },
+            alt:    { col: null, values: [] },
+            spd:    { col: null, values: [] },
+            gcrs:   { col: null, values: [] },
             avgSpd: 0,
             lAvgSpd: [],
             googleMaps: [],
@@ -145,13 +129,13 @@ exports.process = function(json) {
         },
         imu: {
             exists: false,
-            timeMS: [],
-            gyrX: [],
-            gyrY: [],
-            gyrZ: [],
-            accX: [],
-            accY: [],
-            accZ: [],
+            timems: { col: null, values: [] },
+            gyrx: { col: null, values: [] },
+            gyry: { col: null, values: [] },
+            gyrz: { col: null, values: [] },
+            accx: { col: null, values: [] },
+            accy: { col: null, values: [] },
+            accz: { col: null, values: [] },
         },
         inav: {
             exists: false,
@@ -209,28 +193,33 @@ exports.process = function(json) {
                 break;
 
             case 'FMT':
-                switch (row[3].trim()) {
-                    case 'GPS':
-                        for (var i in row) {
-                            var p = row[i].trim().toLowerCase();
-                            if (typeof processed.gps[p] != "undefined") {
-                                processed.gps[p].col = i - 4;
-                            }
-                        };
-                        processed.gps.mapped = true;
-                        break;
+                var val = row[3].trim().toLowerCase();
+
+
+                if (typeof processed[val] != "undefined") {
+                    for (var i in row) {
+                        var p = row[i].trim().toLowerCase();
+                        if (typeof nameMappings[val] != "undefined" && typeof nameMappings[val][p] != "undefined") {
+                            p = nameMappings[val][p];
+                        }
+                        if (typeof processed[val][p] != "undefined") {
+                            processed[val][p].col = i - 4;
+                        }
+                    };
+                    processed[val].mapped = true;
                 }
+
                 break;
 
             case 'ATT':
                 processed.att.exists = true;
-                processed.att.rollIn.push(  [rowNum, parseFloat(row[1])]);
-                processed.att.roll.push(    [rowNum, parseFloat(row[2])]);
-                processed.att.pitchIn.push( [rowNum, parseFloat(row[3])]);
-                processed.att.pitch.push(   [rowNum, parseFloat(row[4])]);
-                processed.att.yawIn.push(   [rowNum, parseFloat(row[5])]);
-                processed.att.yaw.push(     [rowNum, parseFloat(row[6])]);
-                processed.att.navYaw.push(  [rowNum, parseFloat(row[7])]);
+                processed.att.rollin.values.push(  [rowNum, parseFloat(row[processed.att.rollin.col])]);
+                processed.att.roll.values.push(    [rowNum, parseFloat(row[processed.att.roll.col])]);
+                processed.att.pitchin.values.push( [rowNum, parseFloat(row[processed.att.pitchin.col])]);
+                processed.att.pitch.values.push(   [rowNum, parseFloat(row[processed.att.pitch.col])]);
+                processed.att.yawin.values.push(   [rowNum, parseFloat(row[processed.att.yawin.col])]);
+                processed.att.yaw.values.push(     [rowNum, parseFloat(row[processed.att.yaw.col])]);
+                processed.att.navyaw.values.push(  [rowNum, parseFloat(row[processed.att.navyaw.col])]);
                 break;
 
 
@@ -255,30 +244,30 @@ exports.process = function(json) {
                 break;
 
             case 'CURR':
-                processed.current.exists = true;
-                processed.current.thr.push(     [rowNum, parseFloat(row[1])]);
-                processed.current.thrInt.push(  [rowNum, parseFloat(row[2])]);
-                processed.current.volt.push(    [rowNum, row[3]/100]);
-                processed.current.curr.push(    [rowNum, row[4]/100]);
-                processed.current.vcc.push(     [rowNum, row[5]/1000]);
-                processed.current.currTot.push( [rowNum, parseFloat(row[6])]);
+                processed.curr.exists = true;
+                processed.curr.thr.values.push(     [rowNum, parseFloat(row[processed.curr.thr.col])]);
+                processed.curr.thrint.values.push(  [rowNum, parseFloat(row[processed.curr.thrint.col])]);
+                processed.curr.volt.values.push(    [rowNum, parseFloat(row[processed.curr.volt.col])/100]);
+                processed.curr.curr.values.push(    [rowNum, parseFloat(row[processed.curr.curr.col])/100]);
+                processed.curr.vcc.values.push(     [rowNum, parseFloat(row[processed.curr.vcc.col])/1000]);
+                processed.curr.currtot.values.push( [rowNum, parseFloat(row[processed.curr.currtot.col])]);
 
-                processed.current.avgcur += parseFloat(row[4]/100);
-                processed.current.totcur =  parseFloat(row[6]);
+                processed.curr.avgcur += parseFloat(row[processed.curr.curr.col]/100);
+                processed.curr.totcur =  parseFloat(row[processed.curr.currtot.col]);
 
                 break;
 
             case 'CTUN':
                 processed.ctun.exists = true;
-                processed.ctun.thrIn.push(  [rowNum, parseFloat(row[1])]);
-                processed.ctun.sonAlt.push( [rowNum, parseFloat(row[2])]);
-                processed.ctun.barAlt.push( [rowNum, parseFloat(row[3])]);
-                processed.ctun.wpAlt.push(  [rowNum, parseFloat(row[4])]);
-                processed.ctun.navThr.push( [rowNum, parseFloat(row[5])]);
-                processed.ctun.angBst.push( [rowNum, parseFloat(row[6])]);
-                processed.ctun.cRate.push(  [rowNum, parseFloat(row[7])]);
-                processed.ctun.thrOut.push( [rowNum, parseFloat(row[8])]);
-                processed.ctun.dcRate.push( [rowNum, parseFloat(row[9])]);
+                processed.ctun.thrin.values.push(  [rowNum, parseFloat(row[processed.ctun.thrin.col])]);
+                processed.ctun.sonalt.values.push( [rowNum, parseFloat(row[processed.ctun.sonalt.col])]);
+                processed.ctun.baralt.values.push( [rowNum, parseFloat(row[processed.ctun.baralt.col])]);
+                processed.ctun.wpalt.values.push(  [rowNum, parseFloat(row[processed.ctun.wpalt.col])]);
+                processed.ctun.navthr.values.push( [rowNum, parseFloat(row[processed.ctun.navthr.col])]);
+                processed.ctun.angbst.values.push( [rowNum, parseFloat(row[processed.ctun.angbst.col])]);
+                processed.ctun.crate.values.push(  [rowNum, parseFloat(row[processed.ctun.crate.col])]);
+                processed.ctun.throut.values.push( [rowNum, parseFloat(row[processed.ctun.throut.col])]);
+                processed.ctun.dcrate.values.push( [rowNum, parseFloat(row[processed.ctun.dcrate.col])]);
                 break;
 
             case 'ERR':
@@ -399,13 +388,13 @@ exports.process = function(json) {
 
             case 'IMU':
                 processed.imu.exists = true;
-                processed.imu.timeMS.push( [rowNum, parseFloat(row[1])]);
-                processed.imu.gyrX.push( [rowNum, parseFloat(row[2])]);
-                processed.imu.gyrY.push( [rowNum, parseFloat(row[3])]);
-                processed.imu.gyrZ.push( [rowNum, parseFloat(row[4])]);
-                processed.imu.accX.push( [rowNum, parseFloat(row[5])]);
-                processed.imu.accY.push( [rowNum, parseFloat(row[6])]);
-                processed.imu.accZ.push( [rowNum, parseFloat(row[7])]);
+                processed.imu.timems.values.push( [rowNum, parseFloat(row[processed.imu.timems.col])]);
+                processed.imu.gyrx.values.push( [rowNum, parseFloat(row[processed.imu.gyrx.col])]);
+                processed.imu.gyry.values.push( [rowNum, parseFloat(row[processed.imu.gyry.col])]);
+                processed.imu.gyrz.values.push( [rowNum, parseFloat(row[processed.imu.gyrz.col])]);
+                processed.imu.accx.values.push( [rowNum, parseFloat(row[processed.imu.accx.col])]);
+                processed.imu.accy.values.push( [rowNum, parseFloat(row[processed.imu.accy.col])]);
+                processed.imu.accz.values.push( [rowNum, parseFloat(row[processed.imu.accz.col])]);
                 break;
 
             case 'INAV':
@@ -448,8 +437,8 @@ exports.process = function(json) {
     }
 
     processed.gps.avgSpd = (processed.gps.avgSpd / processed.gps.spd.values.length).toFixed(2);
-    processed.current.avgcur = (processed.current.avgcur / processed.current.curr.length).toFixed(2);
-    processed.current.totcur = processed.current.totcur.toFixed(2);
+    processed.curr.avgcur = (processed.curr.avgcur / processed.curr.curr.values.length).toFixed(2);
+    processed.curr.totcur = processed.curr.totcur.toFixed(2);
 
     return processed;
 
