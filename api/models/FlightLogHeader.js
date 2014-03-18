@@ -1,5 +1,5 @@
 /**
- * Log
+ * Flight Log Header
  *
  * @module      :: Model
  * @description :: A short summary of how this model works and what it represents.
@@ -13,21 +13,9 @@ module.exports = {
   	createdAt: {
   		type: 'DATE',
   		index: true
-  	}
+  	},
+  	logId: 'STRING',
     
-  },
-
-  afterCreate : function(flightlog, cb) {
-  	FlightLogHeader.create({
-    	filename: flightlog.filename,
-    	logId: flightlog.id,
-    }).done(function(err, data) {
-    	if (err) {
-    		return cb(err);
-    	} else {
-    		return cb();
-    	}
-    });
   }
 
 };

@@ -54,12 +54,12 @@ module.exports = {
     var perPage = 1;
     var page = 1;
 
-    FlightLog.count(function(err, num) {
+    FlightLogHeader.count(function(err, num) {
       if (!err) {
         var count = num;
         
-        FlightLog.find()
-         // .sort('createdAt DESC')
+        FlightLogHeader.find()
+          .sort('createdAt DESC')
           .exec(function(err, logs) {
             if (err) {
               console.log(err);
