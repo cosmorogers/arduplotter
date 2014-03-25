@@ -21,6 +21,7 @@ module.exports = {
   	FlightLogHeader.create({
     	filename: flightlog.filename,
     	logId: flightlog.id,
+    	size: flightlog.size,
     }).done(function(err, data) {
     	if (err) {
     		return cb(err);

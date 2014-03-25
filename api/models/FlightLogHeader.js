@@ -15,6 +15,7 @@ module.exports = {
   		index: true
   	},
   	logId: 'STRING',
+  	size: 'INTEGER',
     
   }
 
