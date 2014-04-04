@@ -152,6 +152,7 @@ exports.process = function(json) {
         },
         mode: {
             count: 0,
+            mode: { col: null },
             modes: {}, //array of modes!
         },
         ntun: {
@@ -403,7 +404,7 @@ exports.process = function(json) {
 
             case 'MODE':
                 var mode = {
-                    'name' : row[1].trim(),
+                    'name' : row[processed.mode.mode.col].trim(),
                     'thrCrs' : parseFloat(row[2]),
                     'start': rowNum,
                     'end' : false,
