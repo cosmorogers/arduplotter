@@ -403,21 +403,23 @@ exports.process = function(json) {
                 break;
 
             case 'MODE':
-                var mode = {
-                    'name' : row[processed.mode.mode.col].trim(),
-                    'thrCrs' : parseFloat(row[2]),
-                    'start': rowNum,
-                    'end' : false,
-                },
-                next = processed.mode.count + 1;
+                if (processed.mode.mode.col != null) {
+                    var mode = {
+                        'name' : row[processed.mode.mode.col].trim(),
+                        'thrCrs' : parseFloat(row[2]),
+                        'start': rowNum,
+                        'end' : false,
+                    },
+                    next = processed.mode.count + 1;
 
-                processed.mode.modes[next] = mode;
+                    processed.mode.modes[next] = mode;
 
-                if (processed.mode.count > 0) {
-                    processed.mode.modes[processed.mode.count].end = rowNum;
+                    if (processed.mode.count > 0) {
+                        processed.mode.modes[processed.mode.count].end = rowNum;
+                    }
+
+                    processed.mode.count = next;
                 }
-
-                processed.mode.count = next;
                 break;
 
             case 'NTUN':
