@@ -15,7 +15,15 @@ module.exports = {
   		index: true
   	},
   	logId: 'STRING',
-  	size: 'INTEGER',
+  	size: 'INTEGER',/*
+  	logContains: {
+	  	att: 'BOOLEAN',
+	  	curr: 'BOOLEAN',
+	  	ctun: 'BOOLEAN',
+	  	err: 'BOOLEAN',
+	  	gps: 'BOOLEAN',
+	  	imu: 'BOOLEAN'
+	  }*/
     
   }
 
