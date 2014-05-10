@@ -89,7 +89,53 @@ module.exports = {
     });*/
   },
 
+  rebuild: function (req, res) {
+    FlightLog.find().done(function(err, logs) {
+      if (err) {
+        console.log(err);
+      } else {
+        FlightLogHeader.find().done(function(err, logheaders) {
+          if (err) {
 
+          } else {
+
+            for (var k in logs) {
+              var log = logs[k];
+              console.log("rebuilding ", log.id);    
+
+              for (var j in logheaders) {
+                if (logheaders[j].logId === log.id) {
+                  console.log("found header for ", log.id);
+                  var header = logheaders[j];
+                  var processed = ProcessService.process(logs[k].json);
+                  //console.log("header", header);
+                  header.logContains = {};
+                  header.logContains.att  = processed.att.exists;
+                  header.logContains.curr = processed.curr.exists;
+                  header.logContains.ctun = processed.ctun.exists;
+                  header.logContains.err  = processed.err.exists;
+                  header.logContains.gps  = processed.gps.exists;
+                  header.logContains.imu  = processed.imu.exists;
+
+                  // save the updated value
+                  header.save(function(err) {
+                    // value has been saved
+                    console.log("Saved", header);
+                  });
+                  break;
+                }
+              }
+
+            }
+            return res.view();
+          }
+        });
+        
+      }
+    });
+
+return;
+  },
   /**
    * Overrides for the settings in `config/controllers.js`
    * (specific to ViewController)
