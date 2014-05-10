@@ -97,19 +97,22 @@ module.exports = {
           if (err) {
 
           } else {
-            header.logContains = {};
-            header.logContains.att  = processed.att.exists;
-            header.logContains.curr = processed.curr.exists;
-            header.logContains.ctun = processed.ctun.exists;
-            header.logContains.err  = processed.err.exists;
-            header.logContains.gps  = processed.gps.exists;
-            header.logContains.imu  = processed.imu.exists;
+            console.log (header, log.id);
+            if (typeof header != "undefined") {
+              header.logContains = {};
+              header.logContains.att  = processed.att.exists;
+              header.logContains.curr = processed.curr.exists;
+              header.logContains.ctun = processed.ctun.exists;
+              header.logContains.err  = processed.err.exists;
+              header.logContains.gps  = processed.gps.exists;
+              header.logContains.imu  = processed.imu.exists;
 
-            // save the updated value
-            header.save(function(err) {
-              // value has been saved
-              console.log("Saved", header);
-            });
+              // save the updated value
+              header.save(function(err) {
+                // value has been saved
+                console.log("Saved", header);
+              });
+            }
             return res.redirect('view');
           }
       });
