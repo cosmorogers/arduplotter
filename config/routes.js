@@ -55,7 +55,7 @@ module.exports.routes = {
     action: 'kml'
   },
 
-  'get /rebuild' : {
+  'get /rebuild/:id' : {
     controller : 'view',
     action: 'rebuild'
   },

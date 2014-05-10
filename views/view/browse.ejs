@@ -10,7 +10,7 @@
 				<thead>
 					<tr>
 						<th>Date</th>
-						<th>Uploader</th>
+						<th>Log Details</th>
 						<th>Size</th>
 						<th></th>
 					</tr>
@@ -19,7 +19,21 @@
 				<% for(var k in logs) { %>
 					<tr>
 						<td><%= logs[k].createdAt %></td>
-						<td>N/A</td>
+						<td>
+						<%
+							if (typeof logs[k].logContains == "undefined") {
+								logs[k].logContains = {}; %>
+								<small><a href="/rebuild/<%= logs[k].logId %>">rebuild </a></small>
+							<%	
+							}
+							%>
+							<span class="label label-<%= logs[k].logContains.curr ? 'success' : 'default' %>">Power</span>
+							<span class="label label-<%= logs[k].logContains.ctun ? 'success' : 'default' %>">Altitude</span>
+							<span class="label label-<%= logs[k].logContains.att ? 'success' : 'default' %>">Attitude</span>
+							<span class="label label-<%= logs[k].logContains.gps ? 'success' : 'default' %>">GPS</span>
+							<span class="label label-<%= logs[k].logContains.imu ? 'success' : 'default' %>">IMU</span>
+							<span class="label label-<%= logs[k].logContains.err ? 'danger' : 'default' %>">Error(s)</span>
+						</td>
 						<td><%= (logs[k].size / 1000).toFixed(2) %> kB</td>
 						<td>
 							<a href="/view/<%= logs[k].logId %>" class="btn btn-default pull-right">Go &raquo;</a>
