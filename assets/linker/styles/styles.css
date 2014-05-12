@@ -91,3 +91,32 @@ body {
   color: #468847;
   border-color: #468847;
 }
+
+#tabbed-content {
+  position: relative;
+  padding-top: 5px;
+}
+
+#tabbed-content .modal-backdrop {
+  position: absolute;
+}
+
+#loading {
+      background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1030;
+}
+#loading .progress {
+    left: 50%;
+    margin-left: -25%;
+    position: relative;
+    top: 50px;
+    width: 50%;
+}
+.dz-clickable {
+    cursor: pointer;
+}
