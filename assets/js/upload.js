@@ -11,9 +11,9 @@ $(function() {
 		clickable: true,
 		maxFiles: 1,
 		createImageThumbnails: false,
-		acceptedFiles: 'text/x-log,text/plain',
+		//acceptedFiles: 'text/x-log,text/plain',
 		accept: function(file, done) {
-			console.log(file);
+			//console.log(file);
 			done();
 		},
 		previewTemplate: '<div class="container"><div class="dz-preview dz-file-preview">' +
