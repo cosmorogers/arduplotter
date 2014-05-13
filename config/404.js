@@ -27,12 +27,12 @@ module.exports[404] = function pageNotFound(req, res) {
   }
 
   res.status(result.status);
-  res.render(viewFilePath, function (err) {
+  res.view(viewFilePath, function (err) {
     // If the view doesn't exist, or an error occured, send json
     if (err) { return res.json(result, result.status); }
 
     // Otherwise, serve the `views/404.*` page
-    res.render(viewFilePath);
+    res.view(viewFilePath);
   });
 
 };
