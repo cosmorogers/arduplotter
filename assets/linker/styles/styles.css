@@ -120,3 +120,18 @@ body {
 .dz-clickable {
     cursor: pointer;
 }
+
+.flyaway {
+  background: url("/images/flyaway.png") no-repeat scroll center top / 100% auto #468847;    
+  bottom: 60px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 50px;
+}
+.flyaway h1 {
+    color: #FFFFFF;
+}
+.flyaway p {
+    color: #EEEEEE;
+}
