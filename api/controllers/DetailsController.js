@@ -1,0 +1,88 @@
+/**
+ * Details Controller
+ *
+ * @module      :: Controller
+ * @description	:: A set of functions called `actions`.
+ *
+ *                 Actions contain code telling Sails how to respond to a certain type of request.
+ *                 (i.e. do stuff, then send some JSON, show an HTML page, or redirect to another URL)
+ *
+ *                 You can configure the blueprint URLs which trigger these actions (`config/controllers.js`)
+ *                 and/or override them with custom routes (`config/routes.js`)
+ *
+ *                 NOTE: The code you write here supports both HTTP and Socket.io automatically.
+ *
+ * @docs        :: http://sailsjs.org/#!documentation/controllers
+ */
+module.exports = {
+
+	power: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({power: processed.curr});
+		});
+	},
+
+	altitude: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({gps: {alt : processed.gps.alt, relalt: processed.gps.relalt}, ctun: processed.ctun});
+		});
+	},
+
+	attitude: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({att: processed.att});
+		});
+	},
+
+	gps: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({gps: processed.gps});
+		});
+	},
+
+	imu: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({imu: processed.imu.trimmed});
+		});
+	},
+
+  /**
+   * Overrides for the settings in `config/controllers.js`
+   * (specific to UploadController)
+   */
+  _config: {}
+
+  
+};
+
+
+function loadLog(req, res, cb) {
+  if (req.param('id')) {
+    FlightLog.findOne(req.param('id'))
+    .done(function(err, log) {
+      if (err) {
+            console.log("not found", res);
+
+        return res.notfound();
+	    } else {
+        if (typeof log == 'undefined') {
+          return res.notfound();
+        } else {
+          return cb(req, res, log);
+        }
+      }
+    });
+  } else {
+    return res.notfound();
+  }
+}

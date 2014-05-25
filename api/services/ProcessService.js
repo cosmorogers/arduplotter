@@ -9,6 +9,9 @@ exports.process = function(json) {
             'desroll' : 'rollin',
             'despitch' : 'pitchin',
             'desyaw' : 'yawin',
+        },
+        'gps' : {
+            'timems' : 'time',
         }
     }
 
@@ -122,6 +125,8 @@ exports.process = function(json) {
             alt:    { col: null, values: [] },
             spd:    { col: null, values: [] },
             gcrs:   { col: null, values: [] },
+            timestart: null,
+            timeend: null,
             avgSpd: 0,
             lAvgSpd: [],
             googleMaps: [],
@@ -136,6 +141,8 @@ exports.process = function(json) {
             accx: { col: null, values: [] },
             accy: { col: null, values: [] },
             accz: { col: null, values: [] },
+            count: 0,
+            trimmed: {accx: [], accy: [], accz: []}
         },
         inav: {
             exists: false,
@@ -379,6 +386,11 @@ exports.process = function(json) {
                 processed.gps.spd.values.push(    [rowNum, parseFloat(row[processed.gps.spd.col])]);
                 processed.gps.gcrs.values.push(   [rowNum, parseFloat(row[processed.gps.gcrs.col])]);
 
+                if (processed.gps.timestart === null) {
+                    processed.gps.timestart = parseFloat(row[processed.gps.time.col]);
+                }
+                processed.gps.timeend = row[processed.gps.time.col];
+
                 processed.gps.avgSpd += parseFloat(row[processed.gps.spd.col]);
                 processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.values.length]);
 
@@ -396,6 +408,15 @@ exports.process = function(json) {
                 processed.imu.accx.values.push( [rowNum, parseFloat(row[processed.imu.accx.col])]);
                 processed.imu.accy.values.push( [rowNum, parseFloat(row[processed.imu.accy.col])]);
                 processed.imu.accz.values.push( [rowNum, parseFloat(row[processed.imu.accz.col])]);
+
+                processed.imu.count++;
+                //Only take a sample for graph otherwise imu data is too huge!
+                if (processed.imu.count % 10 == 0) {
+                    processed.imu.trimmed.accx.push([rowNum, parseFloat(row[processed.imu.accx.col])]);
+                    processed.imu.trimmed.accy.push([rowNum, parseFloat(row[processed.imu.accy.col])]);
+                    processed.imu.trimmed.accz.push([rowNum, parseFloat(row[processed.imu.accz.col])]);
+                }
+
                 break;
 
             case 'INAV':
