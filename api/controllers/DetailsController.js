@@ -61,11 +61,43 @@ module.exports = {
 		});
 	},
 
-	markers: function(req, res) {
+	messages: function(req, res) {
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 			res.contentType('javascript');
-			return res.send({exists: processed.gps.exists, lat: processed.gps.lat.values, lng: processed.gps.lng.values});
+			return res.send({messages: processed.err});
+		});
+	},
+
+	params: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({params: processed.params});
+		});
+	},
+
+	markers: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+
+			var backgroundColours = {
+				'alt_hold': '#e7b1b2',
+			    'stabilize': '#ecca9e',
+			    'loiter': '#aad7a7',
+			    'rtl' : '#fcc',
+			    'auto' : '#cfc',
+			    'manual': '#ccf',
+			    'fbw_a' : '#ffc',
+			};
+
+			var markings = [];
+		  for (var k in processed.mode.modes) {
+		    markings.push({xaxis: { from: processed.mode.modes[k].start, to: processed.mode.modes[k].end },color: backgroundColours[processed.mode.modes[k].name.toLowerCase()], name: processed.mode.modes[k].name});
+		  }
+
+			res.contentType('javascript');
+			return res.send({exists: processed.gps.exists, lat: processed.gps.lat.values, lng: processed.gps.lng.values, markings: markings});
 		});
 	},
 

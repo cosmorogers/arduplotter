@@ -39,6 +39,9 @@ var app = {
 	activateTab: function() {
 		if (location.hash !== '') {
 			$('a[href="' + location.hash + '"]').tab('show');
+		} else {
+			//Showing messages intial tab
+			app.tabChange('#messages');
 		}
 	},
 
@@ -52,13 +55,12 @@ var app = {
 	},
 
 	tabChange: function(tab) {
-
 		var target = $(tab),
 		loading = $('#loading'),
 		progressbar = $('#loading .progress .progress-bar'),
 		m = tab.substr(1);
 
-			if (typeof modules[m] !== 'undefined' && modules[m].initd !== true) {
+		if (typeof modules[m] !== 'undefined' && modules[m].initd !== true) {
 
 			loading.show();
 			progressbar.css('width', '0%');
@@ -120,6 +122,7 @@ var app = {
 			url: '/details/markers/' + app.settings.id,
 			dataType: 'json',
 			success: function(data) {
+				app.map.markings = data.markings
 				if (data.exists) {
 					app.map.flightPath = new google.maps.Polyline({
 		    			path: [],
@@ -174,7 +177,7 @@ var modules = {
 			}], {
 	    	grid: {
 	      	backgroundColor: { colors: ["#fff", "#eee"] },
-	      	markings: markings
+	      	markings: app.map.markings 
 	    	},
 	  		series: { shadowSize: 0 },
 	  		xaxis: { ticks:[] },
@@ -186,7 +189,7 @@ var modules = {
 			}], {
 	    	grid: {
 	      	backgroundColor: { colors: ["#fff", "#eee"] },
-	      	markings: markings
+	      	markings: app.map.markings 
 	    	},
 	    	series: { shadowSize: 0 },
 	    	xaxis: { ticks:[] },
@@ -202,7 +205,7 @@ var modules = {
 			}], {
 					grid: {
 					backgroundColor: { colors: ["#fff", "#eee"] },
-					markings: markings
+					markings: app.map.markings 
 	    	},
 	    	series: {
 	    		lines: { show: true },
@@ -245,7 +248,7 @@ var modules = {
 			    grid: {
 			    	hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 					crosshair: { mode: "x" },
@@ -265,7 +268,7 @@ var modules = {
 			], {
 		    grid: {
 		      backgroundColor: { colors: ["#fff", "#eee"] },
-		      markings: markings
+		      markings: app.map.markings 
 		    },
 		    series: { shadowSize: 0 },
 		    xaxis: { ticks:[] },
@@ -284,7 +287,7 @@ var modules = {
 			], {
 		    grid: {
 		      backgroundColor: { colors: ["#fff", "#eee"] },
-		      markings: markings
+		      markings: app.map.markings 
 		    },
 		    series: { shadowSize: 0 },
 		    xaxis: { ticks:[] },
@@ -308,7 +311,7 @@ var modules = {
 				], {
 			    grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
@@ -328,7 +331,7 @@ var modules = {
 				], {
 			    grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
@@ -352,7 +355,7 @@ var modules = {
 				], {
 			    grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
@@ -379,7 +382,7 @@ var modules = {
 				], {
 			    grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
@@ -395,7 +398,7 @@ var modules = {
 				], {
 			    grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
@@ -416,7 +419,7 @@ var modules = {
 				], {
 			    grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: markings
+			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
@@ -468,6 +471,41 @@ var modules = {
 
 		}
 	},
+	messages: {
+		initd : false,
+		init: function(data) {
+			this.initd = true;
+			if (data.messages.exists) {
+				if (data.messages.errs.size == 0) {
+					$('#logMessagesContent').append('<div class="alert alert-success"><strong>Hooray!</strong> It would seem that you don\'t have any error messages from this flight</div>');
+				} else {
+					for (k in data.messages.errs) {
+						var alert = $('<div class="alert alert-danger" />');
+            var title = $('<strong>').text(data.messages.errs[k].type)
+            var msg = $('<p />').text(data.messages.errs[k].msg);
+		        alert.append(title).append(msg);
+		        $('#logMessagesContent').append(alert);
+		      }
+				}
+			} else {
+				$('#logMessagesContent').append('<div class="alert alert-success"><strong>Hooray!</strong> It would seem that you don\'t have any error messages from this flight</div>');
+			}
+		}
+	},
+	params: {
+		initd : false,
+		init: function(data) {
+			this.initd = true;
+			var table = $('#paramsTable tbody');
+    	for (var k in data.params) {
+    		var name = $('<td />').text(data.params[k].name),
+    		value = $('<td />').text(data.params[k].value);
+
+    		var row = $('<tr />').append(name).append(value);
+    		table.append(row);
+    	}
+		}
+	}
 }
 
 
