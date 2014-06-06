@@ -15,6 +15,9 @@
 	<div class="alert alert-danger <%= (error ? "" : "hide") %>" id="uploadError">
 		<p><strong>Oh No!</strong> The file you uploaded doesn't appear to be a dataflash log.</p>
 	</div>
+	<div class="alert alert-danger <%= (toobig ? "" : "hide") %>" id="tooBigError">
+		<p><strong>Oh No!</strong> Unfortunately the log you uploaded is too large to process at the moment! If you <a href="mailto:chris@arduplotter.com?subject=Log too big">email a copy to me</a> it will help me futher develop this web app.</p>
+	</div>
 
 	<p>Magic box up there not working? <a href="#legacy" id="legacyUploadBtn">Click here</a></p>
 
@@ -32,11 +35,20 @@
 		</div>
 	</div>
 
+	<div class="callout callout-info">
+		<h4>Important Information</h4>
+		<p>Please note that all logs uploaded are currently <strong>anonymous</strong> and <strong>public</strong>. If you feel that your log contains information that you would rather not be public then please do not use this service, or remove that information from your log before uploading.</p>
+		<p>As this service is still being developed, your log(s) may be downloaded and used for testing purposes, especially if your log breaks the system!</p>
+		<p>If you do notice that your log breaks the system, please email <a href="mailto:chris@arduplotter.com?subject=I broke it">Chris</a> and I will try and fix it!</p>
+	</div>
+
 	<div class="callout callout-danger">
 		<h4>Only Dataflash logs supported at this time</h4>
 		<p>Please note that this site only supports Dataflash logs at the moment (<code>.log</code>).</p>
 		<p>I plan to add support for telemetery logs (<code>.tlog</code>) in the future.</p>
 	</div>
+
+	
 
 </div>
 

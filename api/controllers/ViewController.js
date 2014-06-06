@@ -18,13 +18,34 @@
 module.exports = {
     
   index: function (req, res) {
-    return loadLog(req, res, function(req, res, log) {
+    /*return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 		  return res.view({
   			'log' : log,
   			'processed' : processed
 			});
-    });
+    });*/
+    if (req.param('id')) {
+      FlightLogHeader.findOneByLogId(req.param('id'))
+        .done(function(err, log) {
+        if (err) {
+          return res.notfound();
+        } else {
+          if (typeof log == 'undefined') {
+            return res.notfound();
+          } else {
+            processed = ProcessService.process(log.json);
+            return res.view({
+              'log' : log,
+              'processed' : processed
+            });
+          }
+        }
+      });
+    } else {
+      return res.notfound();
+    }
+
   },
 
   javascript: function (req, res) {
@@ -72,21 +93,7 @@ module.exports = {
             }
         });
       }
-    })
-
-    
-
-    /*Log.find({
-      sort : 'filename ASC'
-    }).done(function(err, logs) {
-        if (err) {
-          console.log("ERROR: ", err);
-        } else {
-          return res.view({
-            'logs' : logs
-          });
-        }
-    });*/
+    });
   },
 
   rebuild: function (req, res) {

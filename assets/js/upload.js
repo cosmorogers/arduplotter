@@ -28,7 +28,11 @@ $(function() {
 			if (typeof response.redirect != "undefined") {
 				window.location = response.redirect;
 			} else if (typeof response.error != "undefined") {
-				$('#uploadError').removeClass('hide');
+				if (response.error == "toobig") {
+					$('#tooBigError').removeClass('hide');
+				} else {
+					$('#uploadError').removeClass('hide');
+				}
 			}
 		}
 

@@ -24,10 +24,9 @@ body {
   background-color: #f5f5f5;
 }
 
-
-/* Custom page CSS
--------------------------------------------------- */
-/* Not required for template or sticky footer method. */
+.navbar {
+  z-index: 2000;
+}
 
 #wrap > .page-content {
   padding: 51px 0 0;
@@ -101,7 +100,7 @@ body {
   position: absolute;
 }
 
-#loading {
+#loading, #mapLoading {
       background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);
     bottom: 0;
     left: 0;
@@ -134,4 +133,16 @@ body {
 }
 .flyaway p {
     color: #EEEEEE;
+}
+
+table#errors td, table#errors th{
+  width: 12.5%;
+  padding: 8px 0;
+}
+
+#mapContent {
+  position: relative;
+}
+#mapLoading > p {
+  margin-top: 200px;
 }

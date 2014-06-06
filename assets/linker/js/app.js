@@ -7,7 +7,7 @@
  * Feel free to change none, some, or ALL of this file to fit your needs!
  */
 
-
+/*
 (function (io) {
 
   // as soon as this file is loaded, connect automatically, 
@@ -69,24 +69,4 @@
   window.io
 
 );
-
-
-function refreshTab() {
-  if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
-}
-
-$(function() {
-    // show active tab on reload
-    refreshTab();
-    // remember the hash in the URL without jumping
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-       if(history.pushState) {
-            history.pushState(null, null, '#'+$(e.target).attr('href').substr(1));
-       } else {
-            location.hash = '#'+$(e.target).attr('href').substr(1);
-       }
-    });
-
-    $(window).on('hashchange', refreshTab);
-
-});
+*/

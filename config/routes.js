@@ -68,7 +68,12 @@ module.exports.routes = {
   'get /view/:id': {
         controller    : 'view',
         action        : 'index'
-    }
+  },
+
+  'get /details/:action/:id': {
+    controller: 'details',
+    //action: 'power'
+  }
 
 
   /*
