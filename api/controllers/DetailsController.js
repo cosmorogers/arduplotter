@@ -19,8 +19,13 @@ module.exports = {
 	power: function(req, res) {
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
+			var capacity = 0;
+  		if (typeof processed.params != "undefined" && typeof processed.params.batt_capacity != "undefined") {
+  			capacity = parseFloat(processed.params.batt_capacity.value);
+  		}
+
 			res.contentType('javascript');
-			return res.send({power: processed.curr});
+			return res.send({power: processed.curr, time: processed.gps.timeend - processed.gps.timestart, battery: capacity});
 		});
 	},
 
@@ -53,6 +58,14 @@ module.exports = {
 			processed = ProcessService.process(log.json);
 			res.contentType('javascript');
 			return res.send({imu: processed.imu.trimmed});
+		});
+	},
+
+	markers: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({exists: processed.gps.exists, lat: processed.gps.lat.values, lng: processed.gps.lng.values});
 		});
 	},
 

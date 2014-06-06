@@ -34,9 +34,10 @@ module.exports = {
           if (typeof log == 'undefined') {
             return res.notfound();
           } else {
-            console.log(log);
+            processed = ProcessService.process(log.json);
             return res.view({
               'log' : log,
+              'processed' : processed
             });
           }
         }

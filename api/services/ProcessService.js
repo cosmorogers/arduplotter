@@ -129,7 +129,7 @@ exports.process = function(json) {
             timeend: null,
             avgSpd: 0,
             lAvgSpd: [],
-            googleMaps: [],
+            //googleMaps: [],
             readings: [],
         },
         imu: {
@@ -394,7 +394,7 @@ exports.process = function(json) {
                 processed.gps.avgSpd += parseFloat(row[processed.gps.spd.col]);
                 processed.gps.lAvgSpd.push([rowNum, processed.gps.avgSpd / processed.gps.spd.values.length]);
 
-                processed.gps.googleMaps.push([parseFloat(row[processed.gps.lat.col]),  parseFloat(row[processed.gps.lng.col])]);
+                //processed.gps.googleMaps.push([parseFloat(row[processed.gps.lat.col]),  parseFloat(row[processed.gps.lng.col])]);
 
                 processed.gps.readings.push(rowNum);
                 break;

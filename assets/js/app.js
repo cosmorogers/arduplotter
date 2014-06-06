@@ -3,6 +3,12 @@ var app = {
 		id: '',
 		colours: ['#1E9CE5', '#B94A48', '#2D6987', '#356635']
 	},
+	map: {
+		map: null,
+		drone: null,
+		markers: [],
+		flightPath: null,
+	},
 
 	init: function() {
 		this.settings.id = $('#loading').data('id');
@@ -16,6 +22,7 @@ var app = {
 		$('a[data-toggle="tab"]').on('show.bs.tab', this.tabChangeEvent);
 		$(window).on('hashchange', this.activateTab);
 		$('.toggle-size').on('click', this.toogleSize);
+		$('.flight-duration-cal').on('change', this.recalcDuration);
 	},
 
 	toogleSize: function(e) {
@@ -90,7 +97,7 @@ var app = {
 	    mapTypeId: google.maps.MapTypeId.SATELLITE
 	  };
 
-	  app.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+	  app.map.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
 	  var image = {
 	  	url: '/images/quad.png',
@@ -99,11 +106,58 @@ var app = {
     	anchor: new google.maps.Point(16,16)
 	  };
 
-  	app.marker = new google.maps.Marker({
-      position: app.map.getCenter(),
+  	app.map.drone = new google.maps.Marker({
+      position: app.map.map.getCenter(),
       //map: app.map,
       icon: image
 	  });
+
+  	app.loadMarkers();
+	},
+
+	loadMarkers: function() {
+		$.ajax({
+			url: '/details/markers/' + app.settings.id,
+			dataType: 'json',
+			success: function(data) {
+				if (data.exists) {
+					app.map.flightPath = new google.maps.Polyline({
+		    			path: [],
+		    			geodesic: true,
+		    			strokeColor: '#FF0000',
+		    			strokeOpacity: 1.0,
+		    			strokeWeight: 2,
+		    			map: app.map.map
+	  			});
+					var first = null;
+					for (m in data.lng) {
+						if (first === null) {
+							first = new google.maps.LatLng( data.lat[m][1], data.lng[m][1])
+						}
+		  			app.map.flightPath.getPath().push(new google.maps.LatLng( data.lat[m][1], data.lng[m][1]));
+					}
+					
+					app.map.map.panTo(first);
+					app.map.map.setZoom(18);
+
+					$('#mapLoading').hide();
+				} else {
+					$('#mapLoadingMsg').hide();
+					$('#mapNoGpsError').removeClass('hide');
+				}
+			}, 
+			error: function(data) {
+
+			}
+		});
+	},
+
+	recalcDuration: function(e) {
+		var cur = $('#currentDrawInput').val(),
+		cap = $('#batteryCapacityInput').val();
+		
+		var dur = parseFloat(((cap / 1000 / cur) * 60 ) * 0.8).toFixed(2);
+		$('#estFlightDurationInput').val(dur);
 	}
 }
 
@@ -118,10 +172,10 @@ var modules = {
 				data: data.power.curr.values,
 				color: app.settings.colours[0],
 			}], {
-	//    	grid: {
-	//      	backgroundColor: { colors: ["#fff", "#eee"] },
-	//      	markings: <%- JSON.stringify(markings) %>
-	//    	},
+	    	grid: {
+	      	backgroundColor: { colors: ["#fff", "#eee"] },
+	      	markings: markings
+	    	},
 	  		series: { shadowSize: 0 },
 	  		xaxis: { ticks:[] },
 			});
@@ -130,10 +184,10 @@ var modules = {
 				data: data.power.currtot.values,
 				color: app.settings.colours[0],
 			}], {
-	//    	grid: {
-	//      	backgroundColor: { colors: ["#fff", "#eee"] },
-	//      	markings: <%- JSON.stringify(markings) %>
-	//    	},
+	    	grid: {
+	      	backgroundColor: { colors: ["#fff", "#eee"] },
+	      	markings: markings
+	    	},
 	    	series: { shadowSize: 0 },
 	    	xaxis: { ticks:[] },
 	  	});
@@ -146,16 +200,23 @@ var modules = {
 				data: data.power.vcc.values,
 				color: app.settings.colours[1]
 			}], {
-	//				grid: {
-	//				backgroundColor: { colors: ["#fff", "#eee"] },
-	//				markings: <%- JSON.stringify(markings) %>
-	//    	},
+					grid: {
+					backgroundColor: { colors: ["#fff", "#eee"] },
+					markings: markings
+	    	},
 	    	series: {
 	    		lines: { show: true },
 	      	shadowSize: 0 
 	    	},
 	    	xaxis: { ticks:[] },
 	  	});
+			$('#totCurrent').text(data.power.totcur);
+			$('#avgCurrent').text(data.power.avgcur);
+
+			$('#batteryCapacityInput').val(data.battery.toFixed(0));
+			$('#currentDrawInput').val(data.power.avgcur);
+			$('#flightDuration').val(data.time / 60000);
+			$('.flight-duration-cal').change();
 		}
 	}, 
 	altitude : {
@@ -181,11 +242,11 @@ var modules = {
 						color: app.settings.colours[1],
 					}
 				], {
-//			    grid: {
-//			    	hoverable: true,
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			    	hoverable: true,
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 					crosshair: { mode: "x" },
 			    xaxis: { ticks:[] },
@@ -202,10 +263,10 @@ var modules = {
 					color: app.settings.colours[1],
 				}
 			], {
-//		    grid: {
-//		      backgroundColor: { colors: ["#fff", "#eee"] },
-//		      markings: <%- JSON.stringify(markings) %>
-//		    },
+		    grid: {
+		      backgroundColor: { colors: ["#fff", "#eee"] },
+		      markings: markings
+		    },
 		    series: { shadowSize: 0 },
 		    xaxis: { ticks:[] },
 		  });
@@ -221,10 +282,10 @@ var modules = {
 					color: app.settings.colours[1],
 				}
 			], {
-//		    grid: {
-//		      backgroundColor: { colors: ["#fff", "#eee"] },
-//		      markings: <%- JSON.stringify(markings) %>
-//		    },
+		    grid: {
+		      backgroundColor: { colors: ["#fff", "#eee"] },
+		      markings: markings
+		    },
 		    series: { shadowSize: 0 },
 		    xaxis: { ticks:[] },
 		  });
@@ -245,10 +306,10 @@ var modules = {
 						color: app.settings.colours[1],
 					}
 				], {
-//			    grid: {
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			  }
@@ -265,10 +326,10 @@ var modules = {
 						color: app.settings.colours[1],
 					}
 				], {
-//			    grid: {
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			  }
@@ -289,10 +350,10 @@ var modules = {
 						color: app.settings.colours[2],
 					}
 				], {
-//			    grid: {
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			  }
@@ -316,10 +377,10 @@ var modules = {
 						color: app.settings.colours[1],
 					}
 				], {
-//			    grid: {
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			  }
@@ -332,10 +393,10 @@ var modules = {
 						color: app.settings.colours[0],
 					}
 				], {
-//			    grid: {
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			  }
@@ -353,15 +414,15 @@ var modules = {
 						color: app.settings.colours[1],
 					}
 				], {
-//			    grid: {
-//			      backgroundColor: { colors: ["#fff", "#eee"] },
-//			      markings: <%- JSON.stringify(markings) %>
-//			    },
+			    grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: markings
+			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			  }
 		  );
-
+			$('#avgSpeed').text(data.gps.avgSpd);
 		}
 	},
 	imu : {
