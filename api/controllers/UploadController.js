@@ -43,7 +43,19 @@ module.exports = {
                 }).done(function(err, data) {
                   // Error handling
                   if (err) {
-                    return console.log(err);
+                    console.error(new Date().toUTCString() + " ::UPLOAD:: " + err);
+
+                    if (req.isAjax || req.isJson) {
+                      return res.send({error: 'toobig'});
+                    } else {                
+                      return res.view({
+                        active: 'upload',
+                        error: false,
+                        toobig: true
+                      });
+                    }
+
+
                   } else {
                     //Check is json upload
                     console.log("log created");
@@ -64,7 +76,8 @@ module.exports = {
         } else {                
           return res.view({
             active: 'upload',
-            error: true
+            error: true,
+            toobig: false
           });
         }
       }
@@ -72,7 +85,8 @@ module.exports = {
       // Send a JSON response
       return res.view({
         active: 'upload',
-        error: false
+        error: false,
+        toobig: false
       });
     }
   },

@@ -15,6 +15,9 @@
 	<div class="alert alert-danger <%= (error ? "" : "hide") %>" id="uploadError">
 		<p><strong>Oh No!</strong> The file you uploaded doesn't appear to be a dataflash log.</p>
 	</div>
+	<div class="alert alert-danger <%= (toobig ? "" : "hide") %>" id="tooBigError">
+		<p><strong>Oh No!</strong> Unfortunately the log you uploaded is too large to process at the moment! If you <a href="mailto:chris@arduplotter.com?subject=Log too big">email a copy to me</a> it will help me futher develop this web app.</p>
+	</div>
 
 	<p>Magic box up there not working? <a href="#legacy" id="legacyUploadBtn">Click here</a></p>
 
