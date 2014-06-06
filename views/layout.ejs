@@ -1,11 +1,13 @@
 <% if(typeof active == 'undefined'){ 
   active = 'home';
 } %>
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+    <%- global.newrelic.getBrowserTimingHeader() %>
     <title>ArduPlotter - <%- title %></title>
 
     <!--  
