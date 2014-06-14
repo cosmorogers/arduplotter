@@ -44,15 +44,15 @@ exports.process = function(json) {
             rate: []
         },
         cam: {
-            exists: false,
-            cams: [], //array of cameras
-            gpsTime: [],
-            lat: [],
-            lng: [],
-            alt: [],
-            roll: [],
-            pitch: [],
-            yaw: []
+            exists:  false,
+            mapped:  false,
+            gpsTime: { col: null, values: [] },
+            lat:     { col: null, values: [] },
+            lng:     { col: null, values: [] },
+            alt:     { col: null, values: [] },
+            roll:    { col: null, values: [] },
+            pitch:   { col: null, values: [] },
+            yaw:     { col: null, values: [] }
         },
         cmd: {
             exists: false,
@@ -243,7 +243,14 @@ exports.process = function(json) {
                 break;
 
             case 'CAM':
-
+                processed.cam.exists = true;
+                processed.cam.gpsTime.values.push( [rowNum, parseFloat(row[processed.cam.gpsTime.col]) ] );
+                processed.cam.lat.values.push( [rowNum, parseFloat(row[processed.cam.lat.col]) ] );
+                processed.cam.lng.values.push( [rowNum, parseFloat(row[processed.cam.lng.col]) ] );
+                processed.cam.alt.values.push( [rowNum, parseFloat(row[processed.cam.alt.col]) ] );
+                processed.cam.roll.values.push( [rowNum, parseFloat(row[processed.cam.roll.col]) ] );
+                processed.cam.pitch.values.push( [rowNum, parseFloat(row[processed.cam.pitch.col]) ] );
+                processed.cam.yaw.values.push( [rowNum, parseFloat(row[processed.cam.yaw.col]) ] );
                 break;
 
             case 'CMD':
