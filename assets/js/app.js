@@ -8,6 +8,7 @@ var app = {
 		drone: null,
 		markers: [],
 		flightPath: null,
+		photoPath: null,
 	},
 
 	init: function() {
@@ -122,28 +123,71 @@ var app = {
 			url: '/details/markers/' + app.settings.id,
 			dataType: 'json',
 			success: function(data) {
-				app.map.markings = data.markings
+				
+				app.map.markings = data.markings; //Graph boundry markings
+
 				if (data.exists) {
-					app.map.flightPath = new google.maps.Polyline({
-		    			path: [],
-		    			geodesic: true,
-		    			strokeColor: '#FF0000',
-		    			strokeOpacity: 1.0,
-		    			strokeWeight: 2,
-		    			map: app.map.map
-	  			});
 					var first = null;
-					for (m in data.lng) {
-						if (first === null) {
-							first = new google.maps.LatLng( data.lat[m][1], data.lng[m][1])
+
+					if (data.lng.length > 0) {
+						app.map.flightPath = new google.maps.Polyline({
+			    			path: [],
+			    			geodesic: true,
+			    			strokeColor: '#FF0000',
+			    			strokeOpacity: 1.0,
+			    			strokeWeight: 2,
+			    			map: app.map.map
+		  			});
+						
+						for (m in data.lng) {
+							if (first === null) {
+								first = new google.maps.LatLng( data.lat[m][1], data.lng[m][1])
+							}
+			  			app.map.flightPath.getPath().push(new google.maps.LatLng( data.lat[m][1], data.lng[m][1]));
 						}
-		  			app.map.flightPath.getPath().push(new google.maps.LatLng( data.lat[m][1], data.lng[m][1]));
 					}
 					
-					app.map.map.panTo(first);
-					app.map.map.setZoom(18);
+					//Camera data
+					if (data.cam.lng.length > 0) {
+						app.map.photoPath = new google.maps.Polyline({
+			    			path: [],
+			    			geodesic: true,
+			    			strokeColor: '#000000',
+			    			strokeOpacity: 1.0,
+			    			strokeWeight: 1,
+			    			map: app.map.map
+		  			});
 
+						var photoCount = 1;
+						var image = '/images/photo.png';
+						for (c in data.cam.lng) {
+							var pos = new google.maps.LatLng( data.cam.lat[c][1], data.cam.lng[c][1]);
+							if (first === null) {
+								first = pos;
+							}
+							
+							var marker = new google.maps.Marker({
+								map: app.map.map,
+								position: pos,
+								title : "Photo #" + photoCount,
+								icon: image
+							});
+
+							app.map.markers.push(marker);
+
+							app.map.photoPath.getPath().push(pos);
+							
+							photoCount++;
+						}
+					}
+
+					if (first !== null) {
+						app.map.map.panTo(first);
+						app.map.map.setZoom(18);
+					}
+						
 					$('#mapLoading').hide();
+					
 				} else {
 					$('#mapLoadingMsg').hide();
 					$('#mapNoGpsError').removeClass('hide');

@@ -49,6 +49,7 @@ module.exports = {
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 			res.contentType('javascript');
+
 			return res.send({gps: processed.gps});
 		});
 	},
@@ -96,8 +97,8 @@ module.exports = {
 		    markings.push({xaxis: { from: processed.mode.modes[k].start, to: processed.mode.modes[k].end },color: backgroundColours[processed.mode.modes[k].name.toLowerCase()], name: processed.mode.modes[k].name});
 		  }
 
-			res.contentType('javascript');
-			return res.send({exists: processed.gps.exists, lat: processed.gps.lat.values, lng: processed.gps.lng.values, markings: markings});
+			res.contentType('text/plain');
+			return res.send({exists: (processed.gps.exists || processed.cam.exists), lat: processed.gps.lat.values, lng: processed.gps.lng.values, markings: markings, cam: {lat: processed.cam.lat.values, lng: processed.cam.lng.values} });
 		});
 	},
 
