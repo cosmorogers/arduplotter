@@ -194,7 +194,10 @@ exports.process = function(json) {
         var row = json[k],
         rowNum = parseInt(k);
         
-        switch (row[0]) {
+        var rowName = row[0];
+        rowName = rowName.trim();
+
+        switch (rowName) {
             case 'PARM':
                 var name = row[1].trim().toLowerCase();
                 processed.params[name] = {'name': row[1], 'value': row[2]};
