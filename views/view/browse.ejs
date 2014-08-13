@@ -42,7 +42,40 @@
 				<% } %>
 				</tbody>
 			</table>
-
+			<div class="row">
+				<div class="col-sm-3 col-xs-6 text-left">
+					<ul class="pager">
+  					<li class="previous <%= (page === 1 ? 'disabled' : '')%>"><a href="/view?page=<%= (page === 1 ? '1' : page - 1) %>">Previous</a></li>
+					</ul>
+				</div>
+				<div class="col-sm-6 hidden-xs text-center">
+					<ul class="pagination">
+<% if ( (page) > 3 ) { %>
+	
+	<li><a href="/view?page=1">1</a></li>
+	<li class="disabled"><a href="#">...</a></li>
+<% } %>
+<% 
+for (p = (page - 2); p < (page + 3); p++) { 
+	if (p > 0 && p <= pages) {
+%>
+	<li class="<%=(p == page ? 'active' : '') %>"><a href="/view?page=<%=p%>"><%=p%> <span class="sr-only">(current)</span></a></li>
+<% 
+	} 
+} 
+if ( (page+2) < pages ) { %>
+	<li class="disabled"><a href="#">...</a></li>
+	<li><a href="/view?page=<%=pages%>"><%=pages%></a></li>
+<% } %>
+					</ul>
+				</div>
+				<div class="col-sm-3 col-xs-6 text-right">
+					<ul class="pager">
+						<% next = (page === pages ? pages : page+1) %>
+  					<li class="next <%= (page === next ? 'disabled' : '') %>"><a href="/view?page=<%= next %>">Next</a></li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
