@@ -72,15 +72,29 @@ module.exports = {
   },
 
   browse: function (req, res) {
-    var perPage = 1;
+    var perPage = 20;
     var page = 1;
 
     FlightLogHeader.count(function(err, num) {
       if (!err) {
         var count = num;
+        var page = 1;
+        if (req.param('page') && req.param('page') > 0) {
+          page = parseInt(req.param('page'));
+        }
+        var perPage = 20;
+        var pages = Math.ceil(count / perPage);
+
+        if (page > pages) {
+          page = pages;
+        }
+
+        var skip = (page - 1) * perPage;
         
         FlightLogHeader.find()
           .sort('createdAt DESC')
+          .limit(perPage)
+          .skip(skip)
           .exec(function(err, logs) {
             if (err) {
               console.log(err);
@@ -88,6 +102,7 @@ module.exports = {
               return res.view({
                 'count': count,
                 'page' : page,
+                'pages': pages,
                 'logs' : logs
               });
             }
