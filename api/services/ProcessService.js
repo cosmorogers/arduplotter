@@ -195,6 +195,9 @@ exports.process = function(json) {
         rowNum = parseInt(k);
         
         var rowName = row[0];
+	if (typeof rowName == "undefined") {
+		continue;
+	}
         rowName = rowName.trim();
 
         switch (rowName) {
