@@ -112,6 +112,9 @@ exports.process = function(json) {
             exists: false,
             evt: [],
         },
+        fmt: {
+            exists: false,
+        },
         gps: {
             exists: false,
             mapped: false,
@@ -207,6 +210,7 @@ exports.process = function(json) {
                 break;
 
             case 'FMT':
+                processed.fmt.exists = true;
                 var val = row[3].trim().toLowerCase();
 
 

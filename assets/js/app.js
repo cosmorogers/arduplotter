@@ -534,6 +534,14 @@ var modules = {
 			} else {
 				$('#logMessagesContent').append('<div class="alert alert-success"><strong>Hooray!</strong> It would seem that you don\'t have any error messages from this flight</div>');
 			}
+
+			if (data.warnings.length > 0) {
+				$('#logWarnings').removeClass('hide');
+				$('#logWarningsContent').text('');
+				for (var i = 0; i < data.warnings.length; i++) {
+					$('#logWarningsContent').append('<div class="alert alert-warning">' + data.warnings[i] + '</div>')
+				} 
+			}
 		}
 	},
 	params: {

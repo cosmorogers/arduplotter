@@ -32,7 +32,7 @@
 
     <!--STYLES-->
     <link rel="stylesheet" href="/linker/styles/bootstrap.css">
-    <link rel="stylesheet" href="/linker/styles/styles.css?v=1">
+    <link rel="stylesheet" href="/linker/styles/styles.css">
     <!--STYLES END-->
   </head>
 
@@ -59,6 +59,7 @@
               <li class="<%= ((active == 'view') ? 'active' : '')%>"><a href="/view">View</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+              <li class="<%= ((active == 'help') ? 'active' : '')%>"><a href="/help">Help</a></li>
               <li class="<%= ((active == 'about') ? 'active' : '')%>"><a href="/about">About</a></li>
               <li class="<%= ((active == 'contact') ? 'active' : '')%>"><a href="/contact">Contact</a></li>
             </ul>

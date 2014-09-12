@@ -1,0 +1,23 @@
+<%
+  active = 'help'
+  title = 'Errors'
+%>
+
+<div class="container">
+  <div class="page-header">
+    <h1>Common Errors</h1>
+  </div>
+  <ul>
+  	<li><a href="#fmt">FMT data missing</a></li>
+	</ul>
+
+
+  <h2 id="fmt">Why am I getting a warning about FMT data being missing?</h2>
+    <p>Logs from different autopilots and different versions of ArduPilot contain slightly different data.</p>
+    <p>At the start of your dataflash log ArduPlotter expects there to be some lines that describe the actual data in the log. These lines are known as 'FMT' data.</p>
+    <p>Without this 'FMT' data ArduPlotter cannot work out what the data within your log actually means, as it just sees just a bunch of numbers.</p>
+    <p>If you have deliberately removed these lines please re add them and then reupload your log to be able to see all of your pretty data!</p>
+
+  </div>
+  
+</div>

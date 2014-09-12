@@ -65,8 +65,14 @@ module.exports = {
 	messages: function(req, res) {
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
+			var warnings = [];
+
+			if (!processed.fmt.exists) {
+				warnings.push('FMT data missing from log. Some data may be incorrect. <a href="/help/errors#fmt">More on this problem</a>');
+			}
+
 			res.contentType('javascript');
-			return res.send({messages: processed.err});
+			return res.send({messages: processed.err, 'warnings': warnings});
 		});
 	},
 

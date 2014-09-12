@@ -40,6 +40,14 @@ module.exports.routes = {
     view: 'pages/about'
   },
 
+  '/help': {
+    view: 'pages/help/index'
+  },
+
+  '/help/errors': {
+    view: 'pages/help/errors'
+  },
+
   'get /view/:id.js' : {
     controller : 'view',
     action: 'javascript'
@@ -69,7 +77,7 @@ module.exports.routes = {
         controller    : 'view',
         action        : 'index'
   },
-
+/*
   'get /details/:action/:id': {
     controller: 'details',
     //action: 'power'
