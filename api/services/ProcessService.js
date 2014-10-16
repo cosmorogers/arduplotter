@@ -300,8 +300,8 @@ exports.process = function(json) {
                 error = {
                   error: parseInt(row[1]),
                   eCode: parseInt(row[2]),
-                  type: 'unknown',
-                  msg: 'unknown'
+                  type: 'Unknown',
+                  msg: 'An error that ArduPlotter is unaware of occurred!'
                 };
                 //http://copter.ardupilot.com/wiki/common-diagnosing-problems-using-logs/#Unexpected_ERRORS_including_Failsafes
                 switch(error.error) {
@@ -380,6 +380,54 @@ exports.process = function(json) {
                     if (error.eCode == 1) {
                         error.msg = "Crash detected";
                     }
+                    break;
+                  case 13:
+                    error.type = "Flip";
+                    if (error.eCode == 2) {
+                        error.msg = "Flip abandoned (because of 2 second timeout)"
+                    }
+                    break;
+                  case 14:
+                    error.type = "AutoTune";
+                    if (error.eCode == 2) {
+                        error.msg = "Bad Gains (failed to determine proper gains)";
+                    }
+                    break;
+                  case 15:
+                    error.type = "Parachute";
+                    if (error.eCode == 2) {
+                        error.msg = "Too low to deploy parachute";
+                    }
+                    break;
+                  case 16:
+                    error.type = "EKF/InertialNav Check";
+                    var flightModeErrs = [
+                        "GPS Glitch cleared",
+                        "",
+                        "GPS Glitch"
+                    ];
+                    error.msg = flightModeErrs[error.eCode];
+
+                    if (error.eCode == 2) {
+                        error.msg = "Bad Variance";
+                    } else if (error.eCode == 0) {
+                        error.msg = "Bad Variance cleared";
+                    }
+                    break;
+                  case 17:
+                    error.type = "EKF/InertialNav Failsafe";
+                    if (error.eCode == 2) {
+                        error.msg = "EKF Failsafe triggered";
+                    }
+                    break;
+                  case 18:
+                    error.type = "Baro glitch";
+                    var flightModeErrs = [
+                        "Baro glitch cleared",
+                        "",
+                        "Baro glitch"
+                    ];
+                    error.msg = flightModeErrs[error.eCode];
                     break;
                 }
                 processed.err.errs.push(error);
