@@ -146,3 +146,11 @@ table#errors td, table#errors th{
 #mapLoading > p {
   margin-top: 200px;
 }
+#graphModesList li {
+  list-style: none;
+  margin-left: 0;
+  margin-bottom: 10px;
+}
+#graphModesList {
+  padding-left: 10px;
+}
