@@ -1,0 +1,40 @@
+<%
+  active = 'help'
+  title = 'Graph Information'
+%>
+
+<div class="container">
+  <div class="page-header">
+    <h1>Graph Information</h1>
+  </div>
+  <ul>
+  	<li><a href="#backgrounds">Background Colours</a></li>
+    <li><a href="#whiteStart">White Start of Graph</a></li>
+	</ul>
+
+
+  <h2 id="backgrounds">What do all the different background colours mean?</h2>
+  <p>Most graphs (depending on your log) will have different colour stripes in the background. These different colours represent different flight modes.</p>
+  <p>The modes the different colours represent are listed below</p>
+  <ul id="graphModesList">
+    <li><span class="label" style="background-color:#e7b1b2">&nbsp;&nbsp;</span> Altitude Hold</li>
+    <li><span class="label" style="background-color:#ecca9e">&nbsp;&nbsp;</span> Stabilize</li> 
+    <li><span class="label" style="background-color:#aad7a7">&nbsp;&nbsp;</span> Loiter</li> 
+    <li><span class="label" style="background-color:#fcc">&nbsp;&nbsp;</span> Return To Launch</li> 
+    <li><span class="label" style="background-color:#cfc">&nbsp;&nbsp;</span> Auto</li> 
+    <li><span class="label" style="background-color:#ccf">&nbsp;&nbsp;</span> Manual</li> 
+    <li><span class="label" style="background-color:#ffc">&nbsp;&nbsp;</span> Fly By Wire A (Plane)</li> 
+  </ul>
+
+  <p>These apply to every graph, apart from the IMU vibrations graph. This has no background colour due to the large amount of data being plotted</p>
+
+  <p>If there is a white strip in your graph this means the log contains a mode that ArduPlotter does not know about. If this is the case you may wish to inform <a href="/contact">us</a> that your log has new mode(s).</p>
+
+  <hr>
+
+  <h2 id="whiteStart">Why does my log graph have a white stripe at the beginning when I have used a mode listed above?</h2>
+  <p>Some versions of ArduPilot do not report the initial starting mode in the log. It is therefore impossible to work out what mode you have used from the log.</p>
+  <p>&nbsp;</p>
+
+
+</div>

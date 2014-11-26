@@ -48,6 +48,10 @@ module.exports.routes = {
     view: 'pages/help/errors'
   },
 
+  '/help/graphs': {
+    view: 'pages/help/graphs'
+  },
+
   'get /view/:id.js' : {
     controller : 'view',
     action: 'javascript'
