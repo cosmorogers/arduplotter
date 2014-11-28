@@ -27,11 +27,16 @@
 							<%	
 							}
 							%>
+
+							
 							<span class="label label-<%= logs[k].logContains.curr ? 'success' : 'default' %>">Power</span>
 							<span class="label label-<%= logs[k].logContains.ctun ? 'success' : 'default' %>">Altitude</span>
 							<span class="label label-<%= logs[k].logContains.att ? 'success' : 'default' %>">Attitude</span>
 							<span class="label label-<%= logs[k].logContains.gps ? 'success' : 'default' %>">GPS</span>
 							<span class="label label-<%= logs[k].logContains.imu ? 'success' : 'default' %>">IMU</span>
+							<% if (typeof logs[k].logContains.ntun != "undefined") { %>
+							<span class="label label-<%= logs[k].logContains.ntun ? 'success' : 'default' %>">NTUN</span>
+							<% } %>
 							<span class="label label-<%= logs[k].logContains.err ? 'danger' : 'default' %>">Error(s)</span>
 						</td>
 						<td><%= (logs[k].size / 1000).toFixed(2) %> kB</td>
