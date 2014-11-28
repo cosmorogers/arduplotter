@@ -62,6 +62,14 @@ module.exports = {
 		});
 	},
 
+	ntun: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({ntun: processed.ntun});
+		});
+	},
+
 	messages: function(req, res) {
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);

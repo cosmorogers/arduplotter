@@ -515,6 +515,48 @@ var modules = {
 
 		}
 	},
+	ntun: {
+		initd : false,
+		init: function(data) {
+			this.initd = true;
+			$.plot('#ntun-velocity-graph',[
+					{
+						label: 'Velocity X', 
+						data: data.ntun.velx.values,
+						color: app.settings.colours[0],
+					},
+					{
+						label: 'Desired Velocity X', 
+						data: data.ntun.dvelx.values,
+						color: app.settings.colours[1],
+					},
+					{
+						label: 'Velocity Y', 
+						data: data.ntun.vely.values,
+						color: app.settings.colours[2],
+					},
+					{
+						label: 'Desired Velocity X', 
+						data: data.ntun.dvely.values,
+						color: app.settings.colours[3],
+					},
+				], {
+					grid: {
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: app.map.markings 
+			    },
+			    series: { shadowSize: 0 },
+			    xaxis: { ticks:[] },
+			    zoom: {
+						interactive: true
+					},
+					pan: {
+						interactive: true
+					}
+			  }
+		  );
+		}
+	},
 	messages: {
 		initd : false,
 		init: function(data) {

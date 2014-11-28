@@ -65,6 +65,7 @@
 					<% if (log.logContains.att) { %><li><a href="#attitude" data-toggle="tab">Attitude</a></li><% } %>
 					<% if (log.logContains.gps) { %><li><a href="#gps" data-toggle="tab">GPS</a></li><% } %>
 					<% if (log.logContains.imu) { %><li><a href="#imu" data-toggle="tab">IMU</a></li><% } %>
+					<% if (log.logContains.ntun) { %><li><a href="#ntun" data-toggle="tab">NTUN</a></li><% } %>
 					<li class="active"><a href="#messages" data-toggle="tab">Messages</a></li>
 					<li><a href="#params" data-toggle="tab">Params</a></li>
 				</ul>
@@ -302,6 +303,25 @@
 					</div>
 					<% } %>
 
+					<% if (log.logContains.ntun) { %>
+		      <div class="tab-pane" id="ntun">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<button class="btn btn-xs btn-primary pull-right toggle-size"><span class="glyphicon glyphicon-resize-full"></button>
+										<h3 class="panel-title">NTUN Data</h3>
+									</div>
+									<div class="panel-body">
+										<div id="ntun-velocity-graph"  style="width:100%;height:500px;"></div>
+										<p>Click <a href="http://copter.ardupilot.com/wiki/loiter-mode/#Verifying_Loiter_performance_with_dataflash_logs" target="_blank">here</a> for more information about this graph</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<% } %>
+
 					<div class="tab-pane active" id="messages">
 						<div class="row">
 							<div class="col-md-12" id="logMessagesContent">
@@ -370,6 +390,6 @@ scripts = '<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=f
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.resize.min.js"></script>' + 
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.navigate.js"></script>' +
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.crosshair.js"></script>' + 
-'<script language="javascript" type="text/javascript" src="/js/app.js?v=3"></script>';
+'<script language="javascript" type="text/javascript" src="/js/app.js?v=4"></script>';
 //'<script language="javascript" type="text/javascript" src="/view/' + log.id + '.js"></script>';
 %>

@@ -167,18 +167,19 @@ exports.process = function(json) {
         },
         ntun: {
             exists: false,
-            wpDst: [],
-            wpBrg: [],
-            perX: [],
-            perY: [],
-            dVelX: [],
-            dVelY: [],
-            velX: [],
-            velY: [],
-            dAcX: [],
-            dAcY: [],
-            dRol: [],
-            dpit: [],
+            mapped: false,
+            wpdst: { col: null, values: [] },
+            wpbrg: { col: null, values: [] },
+            perx: { col: null, values: [] },
+            pery: { col: null, values: [] },
+            dvelx: { col: null, values: [] },
+            dvely: { col: null, values: [] },
+            velx: { col: null, values: [] },
+            vely: { col: null, values: [] },
+            dacx: { col: null, values: [] },
+            dacy: { col: null, values: [] },
+            drol: { col: null, values: [] },
+            dpit: { col: null, values: [] },
         },
         pm: {
             exists: false,
@@ -212,7 +213,7 @@ exports.process = function(json) {
             case 'FMT':
                 processed.fmt.exists = true;
                 var val = row[3].trim().toLowerCase();
-
+                //console.log("Mapping " + val);
 
                 if (typeof processed[val] != "undefined") {
                     for (var i in row) {
@@ -220,7 +221,9 @@ exports.process = function(json) {
                         if (typeof nameMappings[val] != "undefined" && typeof nameMappings[val][p] != "undefined") {
                             p = nameMappings[val][p];
                         }
+                        //console.log ("Col = " + p);
                         if (typeof processed[val][p] != "undefined") {
+                            //console.log("Mapped " + p + " to " + (i-4));
                             processed[val][p].col = i - 4;
                         }
                     };
@@ -509,7 +512,19 @@ exports.process = function(json) {
                 break;
 
             case 'NTUN':
-
+                processed.ntun.exists = true;
+                processed.ntun.wpdst.values.push( [rowNum, parseFloat(row[processed.ntun.wpdst.col])]);
+                processed.ntun.wpbrg.values.push( [rowNum, parseFloat(row[processed.ntun.wpbrg.col])]);
+                processed.ntun.perx.values.push(  [rowNum, parseFloat(row[processed.ntun.perx.col])]);
+                processed.ntun.pery.values.push(  [rowNum, parseFloat(row[processed.ntun.pery.col])]);
+                processed.ntun.dvelx.values.push( [rowNum, parseFloat(row[processed.ntun.dvelx.col])]);
+                processed.ntun.dvely.values.push( [rowNum, parseFloat(row[processed.ntun.dvely.col])]);
+                processed.ntun.velx.values.push(  [rowNum, parseFloat(row[processed.ntun.velx.col])]);
+                processed.ntun.vely.values.push(  [rowNum, parseFloat(row[processed.ntun.vely.col])]);
+                processed.ntun.dacx.values.push(  [rowNum, parseFloat(row[processed.ntun.dacx.col])]);
+                processed.ntun.dacy.values.push(  [rowNum, parseFloat(row[processed.ntun.dacy.col])]);
+                processed.ntun.drol.values.push(  [rowNum, parseFloat(row[processed.ntun.drol.col])]);
+                processed.ntun.dpit.values.push(  [rowNum, parseFloat(row[processed.ntun.dpit.col])]);
                 break;
 
             case 'PM':
