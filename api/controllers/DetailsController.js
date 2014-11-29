@@ -98,12 +98,14 @@ module.exports = {
 
 			var backgroundColours = {
 				'alt_hold': '#e7b1b2',
-			    'stabilize': '#ecca9e',
-			    'loiter': '#aad7a7',
-			    'rtl' : '#fcc',
-			    'auto' : '#cfc',
-			    'manual': '#ccf',
-			    'fbw_a' : '#ffc',
+		    'stabilize': '#ecca9e',
+		    'loiter': '#aad7a7',
+		    'rtl' : '#fcc',
+		    'land': '#e2dade',
+		    'auto' : '#cfc',
+		    'manual': '#ccf',
+		    'fbw_a' : '#ffc',
+		    'poshold': '#f8e8a6',
 			};
 
 			var markings = [];
