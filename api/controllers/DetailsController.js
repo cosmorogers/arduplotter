@@ -98,6 +98,7 @@ module.exports = {
 
 			var backgroundColours = {
 				'alt_hold': '#e7b1b2',
+				'althold': '#e7b1b2',
 		    'stabilize': '#ecca9e',
 		    'loiter': '#aad7a7',
 		    'rtl' : '#fcc',
