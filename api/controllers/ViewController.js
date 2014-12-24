@@ -148,8 +148,32 @@ module.exports = {
       });
     });
 
-return;
+    return;
   },
+
+
+  map: function (req, res) {
+    return loadLog(req, res, function(req, res, log) {
+      processed = ProcessService.process(log.json);
+
+      var path = [];
+      var flight = [];
+
+      for(var i = 0; i < processed.gps.time.values.length; i++) { 
+        //path.push(processed.gps.time.values[i][1]);
+        flight.push(i);
+        flight.push(processed.gps.lng.values[i][1]);
+        flight.push(processed.gps.lat.values[i][1]);
+        flight.push(processed.gps.alt.values[i][1]);
+/*
+        path.push(processed.gps.lng.values[i][1]);
+        path.push(processed.gps.lat.values[i][1]);
+        path.push(processed.gps.relalt.values[i][1]);*/
+      }
+      return res.view({path: path, flight: flight, layout: null});
+    });
+  },
+
   /**
    * Overrides for the settings in `config/controllers.js`
    * (specific to ViewController)

@@ -16,7 +16,7 @@
 					<p class="alert alert-info col-md-6 col-md-offset-3" id="mapLoadingMsg">Map Loading</p>
 					<p class="alert alert-warning col-md-6 col-md-offset-3 hide" id="mapNoGpsError">No GPS data associated with this log</p>
 				</div>
-
+<!--
 				<div class="btn-group" style="margin-bottom: 5px;">
 					<div class="btn-group">
 	    			<button type="button" class="btn btn-default" disabled>Map Options:</button>
@@ -35,8 +35,9 @@
 					</div>
 				</div>
 
-
-				<div id="map-canvas"></div>
+-->
+				<div id="map-canvas"></div><br />
+				<p><button class="btn btn-block btn-lg btn-success" type="button" data-toggle="modal" data-target="#mapModal">NEW: View 3D Map</button></p>
 			</div>
 		</div>
 	</div>
@@ -384,6 +385,35 @@
 		</div>
 	</div>
 </div>
+
+
+<div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="mapModalLabel">3D Map</h4>
+      </div>
+      <div class="modal-body">
+        <p class="text-info">Please note the new 3D map is still very much in Beta!</p>
+        <p>It relies heavily on your log GPS data. If your GPS data has glitches, starts off at (0,0), or has any other problems, the map may not react well</p>
+        <p><strong>Known Problems</strong></p>
+        <ul>
+        	<li>If you move the view around before the map is fully loaded you may get very weird views</li>
+        	<li>All flights appear to start 4<sup>th</sup> August 2012 16:00</li>
+        	<li>Some of the flight is cut off if the log is very big</li>
+        	<li>Flight is undergound - <em>This is because of your GPS altitude data, and the 3<sup>rd</sup> party terrain data</em></li>
+        	<li>Flight takes off / lands in the air - <em>This is because of your GPS altitude data, and the 3<sup>rd</sup> party terrain data</em></li>
+      	</ul>
+      	<p class="text-danger">You need WebGL for this map to work. It seems to work best in Chrome</p>
+      	<p class="text-success">As ever, if you have any comments, problems, suggestions, etc, please <a href="/contact">contact me</a>!</p>
+      	<p><a href="/map/<%= log.logId %>" class="btn btn-lg btn-info btn-block">Click here to go to the 3D map</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <%
 scripts = '<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>' +
 '<script language="javascript" type="text/javascript" src="/flot/jquery.flot.js"></script>' + 

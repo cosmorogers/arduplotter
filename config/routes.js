@@ -81,6 +81,11 @@ module.exports.routes = {
         controller    : 'view',
         action        : 'index'
   },
+
+  'get /map/:id': {
+        controller : 'view',
+        action : 'map'
+  },
 /*
   'get /details/:action/:id': {
     controller: 'details',

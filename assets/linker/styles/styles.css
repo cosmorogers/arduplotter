@@ -154,3 +154,7 @@ table#errors td, table#errors th{
 #graphModesList {
   padding-left: 10px;
 }
+
+.modal {
+  margin-top: 50px;
+}
