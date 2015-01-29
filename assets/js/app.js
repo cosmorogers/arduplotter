@@ -10,6 +10,9 @@ var app = {
 		flightPath: null,
 		photoPath: null,
 	},
+	readings: null,
+	playTimeout: null,
+	graphs: [],
 
 	init: function() {
 		this.settings.id = $('#loading').data('id');
@@ -24,6 +27,8 @@ var app = {
 		$(window).on('hashchange', this.activateTab);
 		$('.toggle-size').on('click', this.toogleSize);
 		$('.flight-duration-cal').on('change', this.recalcDuration);
+		$('#playMapBtn').on('click', this.togglePlayMap);
+		$(".flot-graph").on('plothover', this.graphHover);
 	},
 
 	toogleSize: function(e) {
@@ -86,7 +91,7 @@ var app = {
 					loading.delay(800).fadeOut();
 				},
 				error: function(data){
-					alert('error');
+					alert('Sorry, something went wrong fetching the graph data. If you are using an old version of you browser please update and try again.');
 					loading.delay(800).fadeOut();
 				}
 			});
@@ -111,8 +116,9 @@ var app = {
 
   	app.map.drone = new google.maps.Marker({
       position: app.map.map.getCenter(),
-      //map: app.map,
-      icon: image
+      map: app.map.map,
+      icon: image,
+      visible: true,
 	  });
 
   	app.loadMarkers();
@@ -125,6 +131,7 @@ var app = {
 			success: function(data) {
 				
 				app.map.markings = data.markings; //Graph boundry markings
+				app.readings = data.readings;
 
 				if (data.exists) {
 					var first = null;
@@ -182,6 +189,7 @@ var app = {
 					}
 
 					if (first !== null) {
+						app.map.drone.setPosition(first);
 						app.map.map.panTo(first);
 						app.map.map.setZoom(18);
 					}
@@ -205,40 +213,98 @@ var app = {
 		
 		var dur = parseFloat(((cap / 1000 / cur) * 60 ) * 0.8).toFixed(2);
 		$('#estFlightDurationInput').val(dur);
-	}
-}
+	},
 
+	play: function(i) {
+		var pos = app.map.flightPath.getPath().getAt(i);
+
+		if (typeof pos !== undefined && pos != null) {
+			var latLng = new google.maps.LatLng(pos.lat(), pos.lng());
+			app.map.map.setCenter(latLng);
+			app.map.drone.setPosition(latLng);
+
+
+			xPos = ( i / app.map.flightPath.getPath().length ) * (app.readings.last - app.readings.first) + app.readings.first
+			
+
+			app.graphs.map(function(v) {v.setCrosshair({x: xPos})});
+
+		}
+
+		if (i < app.map.flightPath.getPath().length) {
+			app.playTimeout = setTimeout(function() {
+				app.play(i+1);
+			}, 30);
+		}
+	},
+
+	stop: function() {
+		if (app.playTimeout) {
+			clearTimeout(app.playTimeout);
+			app.playTimeout = null;
+		}
+	},
+
+	togglePlayMap: function(e) {
+		if (app.playTimeout) {
+			app.stop();
+		} else {
+			app.play(0);
+		}
+	},
+
+	graphHover: function (event, posi, item) {
+		if (app.readings !== null) {
+  		var x = parseInt(posi.x);
+
+  		//get aprox pos
+  		var index = Math.round( ((x - app.readings.first) / (app.readings.last - app.readings.first) ) * (app.readings.length));
+
+			if (index > 0) {
+				var pos = app.map.flightPath.getPath().getAt(index);
+				if (typeof pos != "undefined") {
+					app.map.drone.setPosition(new google.maps.LatLng(pos.lat(), pos.lng()));
+				}
+			}
+  	}
+  },
+	
+}
 
 var modules = {
 	power: {
 		initd : false,
 		init: function(data) {
 			this.initd = true;
-			$.plot('#current-graph',[{
+			app.graphs.push($.plot('#current-graph',[{
 				label: 'Current', 
 				data: data.power.curr.values,
 				color: app.settings.colours[0],
 			}], {
 	    	grid: {
+	    		hoverable: true,
 	      	backgroundColor: { colors: ["#fff", "#eee"] },
 	      	markings: app.map.markings 
 	    	},
 	  		series: { shadowSize: 0 },
 	  		xaxis: { ticks:[] },
-			});
-		  $.plot('#totcurrent-graph',[{
+	  		crosshair: { mode: "x" },
+			}));
+		  app.graphs.push($.plot('#totcurrent-graph',[{
 				label: 'Total Current', 
 				data: data.power.currtot.values,
 				color: app.settings.colours[0],
 			}], {
 	    	grid: {
+	    		hoverable: true,
 	      	backgroundColor: { colors: ["#fff", "#eee"] },
 	      	markings: app.map.markings 
 	    	},
 	    	series: { shadowSize: 0 },
 	    	xaxis: { ticks:[] },
-	  	});
-			$.plot('#voltage-graph',[{
+	    	crosshair: { mode: "x" },
+	  	}));
+			app.graphs.push($.plot('#voltage-graph',[{
 				label: 'Voltage', 
 				data: data.power.volt.values,
 				color: app.settings.colours[0],
@@ -247,7 +313,8 @@ var modules = {
 				data: data.power.vcc.values,
 				color: app.settings.colours[1]
 			}], {
-					grid: {
+				grid: {
+	    		hoverable: true,
 					backgroundColor: { colors: ["#fff", "#eee"] },
 					markings: app.map.markings 
 	    	},
@@ -256,7 +323,8 @@ var modules = {
 	      	shadowSize: 0 
 	    	},
 	    	xaxis: { ticks:[] },
-	  	});
+	    	crosshair: { mode: "x" },
+	  	}));
 			$('#totCurrent').text(data.power.totcur);
 			$('#avgCurrent').text(data.power.avgcur);
 
@@ -270,7 +338,7 @@ var modules = {
 		initd : false,
 		init: function(data) {
 			this.initd = true;
-			$.plot('#altitude-graph',[
+			app.graphs.push($.plot('#altitude-graph',[
 					{
 						label: 'GPS', 
 						data: data.gps.alt.values,
@@ -298,8 +366,8 @@ var modules = {
 					crosshair: { mode: "x" },
 			    xaxis: { ticks:[] },
 			  }
-		  );
-		  $.plot('#throttle-graph',[
+		  ));
+		  app.graphs.push($.plot('#throttle-graph',[
 				{
 					label: 'In', 
 					data: data.ctun.thrin.values,
@@ -311,14 +379,16 @@ var modules = {
 				}
 			], {
 		    grid: {
+		    	hoverable: true,
 		      backgroundColor: { colors: ["#fff", "#eee"] },
 		      markings: app.map.markings 
 		    },
 		    series: { shadowSize: 0 },
 		    xaxis: { ticks:[] },
-		  });
+		    crosshair: { mode: "x" },
+		  }));
 
-		  $.plot('#crate-graph',[
+		  app.graphs.push($.plot('#crate-graph',[
 				{
 					label: 'Climb Rate', 
 					data: data.ctun.crate.values,
@@ -330,12 +400,14 @@ var modules = {
 				}
 			], {
 		    grid: {
+		    	hoverable: true,
 		      backgroundColor: { colors: ["#fff", "#eee"] },
 		      markings: app.map.markings 
 		    },
 		    series: { shadowSize: 0 },
 		    xaxis: { ticks:[] },
-		  });
+		    crosshair: { mode: "x" },
+		  }));
 		}
 	},
 	attitude : {
@@ -354,11 +426,13 @@ var modules = {
 					}
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			  }
 		  );
 
@@ -374,11 +448,13 @@ var modules = {
 					}
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			  }
 		  );
 
@@ -398,11 +474,13 @@ var modules = {
 					}
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			  }
 		  );
 
@@ -425,11 +503,13 @@ var modules = {
 					}
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			  }
 		  );
 
@@ -441,11 +521,13 @@ var modules = {
 					}
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			  }
 		  );
 
@@ -462,11 +544,13 @@ var modules = {
 					}
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			  }
 		  );
 			$('#avgSpeed').text(data.gps.avgSpd);
@@ -494,6 +578,7 @@ var modules = {
 					},
 				], {
 			    grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: [
 			      	{ color: '#000', lineWidth: 2, yaxis: { from: 3, to: 3 } },
@@ -504,6 +589,7 @@ var modules = {
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			    zoom: {
 						interactive: true
 					},
@@ -542,11 +628,13 @@ var modules = {
 					},
 				], {
 					grid: {
+		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
 			    zoom: {
 						interactive: true
 					},

@@ -158,3 +158,45 @@ table#errors td, table#errors th{
 .modal {
   margin-top: 50px;
 }
+
+.fluid-padding {
+  padding-top: 15px;
+}
+
+@media (min-width: 1200px) and (max-width: 1750px) {
+  .data-graphs .col-md-6  {
+    width: 100%;
+  }
+}
+@media (min-width: 1200px) {
+  #mapContent {
+    position: fixed;
+    width: 41%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-view-log .container {
+    width: auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  .page-view-log .container {
+    width: 970px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 992px) {
+  .page-view-log .container {
+    width: 750px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-view-log .container {
+    width: auto;
+  }
+}

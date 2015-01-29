@@ -1,6 +1,9 @@
-<% if(typeof active == 'undefined'){ 
+<% 
+if(typeof active == 'undefined'){ 
   active = 'home';
-} %>
+}
+var pageClass = title.toLowerCase().replace(/ /g,'-');
+%>
 
 <!DOCTYPE html>
 <html>
@@ -38,7 +41,7 @@
 
   <body>
 <!-- Wrap all page content here -->
-    <div id="wrap">
+    <div id="wrap" class="page-<%= pageClass %>">
 
       <!-- Fixed navbar -->
       <div class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">

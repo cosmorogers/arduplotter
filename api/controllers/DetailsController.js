@@ -115,7 +115,18 @@ module.exports = {
 		  }
 
 			res.contentType('text/plain');
-			return res.send({exists: (processed.gps.exists || processed.cam.exists), lat: processed.gps.lat.values, lng: processed.gps.lng.values, markings: markings, cam: {lat: processed.cam.lat.values, lng: processed.cam.lng.values} });
+			return res.send({
+				exists: (processed.gps.exists || processed.cam.exists), 
+				lat: processed.gps.lat.values, 
+				lng: processed.gps.lng.values, 
+				markings: markings, 
+				cam: {lat: processed.cam.lat.values, lng: processed.cam.lng.values},
+				readings: {
+					first: processed.gps.readings[0],
+					last: processed.gps.readings[processed.gps.readings.length - 1],
+					length: processed.gps.readings.length
+				}
+			});
 		});
 	},
 
