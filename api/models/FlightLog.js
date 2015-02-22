@@ -31,9 +31,10 @@ module.exports = {
         err:  processed.err.exists,
         gps:  processed.gps.exists,
         imu:  processed.imu.exists,
-        ntun:  processed.ntun.exists
+        ntun:  processed.ntun.exists,
+        mag:  processed.mag.exists,
       },
-      build: 1
+      build: 2
     }).done(function(err, data) {
     	if (err) {
     		return cb(err);

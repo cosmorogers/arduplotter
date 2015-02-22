@@ -70,6 +70,14 @@ module.exports = {
 		});
 	},
 
+	mag: function(req, res) {
+		return loadLog(req, res, function(req, res, log) {
+			processed = ProcessService.process(log.json);
+			res.contentType('javascript');
+			return res.send({mag: processed.mag, thr: processed.ctun.thrin});
+		});
+	},
+
 	messages: function(req, res) {
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);

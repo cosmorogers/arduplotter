@@ -645,6 +645,40 @@ var modules = {
 		  );
 		}
 	},
+	mag: {
+		initd : false,
+		init: function(data) {
+			this.initd = true;
+			$.plot('#mag-graph',[
+					{
+						label: 'Magnetic Field', 
+						data: data.mag.magf.values,
+						color: app.settings.colours[0],
+					},
+					{
+						label: 'Throttle',
+						data: data.thr.values,
+						color: app.settings.colours[1],
+					}
+				], {
+					grid: {
+		    		hoverable: true,
+			      backgroundColor: { colors: ["#fff", "#eee"] },
+			      markings: app.map.markings 
+			    },
+			    series: { shadowSize: 0 },
+			    xaxis: { ticks:[] },
+			    crosshair: { mode: "x" },
+			    zoom: {
+						interactive: true
+					},
+					pan: {
+						interactive: true
+					}
+			  }
+		  );
+		}
+	},
 	messages: {
 		initd : false,
 		init: function(data) {

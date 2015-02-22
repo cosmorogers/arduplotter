@@ -66,18 +66,20 @@ exports.process = function(json) {
             lat: [],
             lng: []
         },
-        compass: {
+        mag: {
             exists: false,
-            x: [],
-            magX: [],
-            magY: [],
-            magZ: [],
-            ofsX: [],
-            ofsY: [],
-            ofsZ: [],
-            mofsX: [],
-            mofsY: [],
-            mofsZ: []
+            mapped: false,
+            timems: { col: null, values: [] },
+            magx:   { col: null, values: [] },
+            magy:   { col: null, values: [] },
+            magz:   { col: null, values: [] },
+            magf:   { values: [] },
+            ofsx:   { col: null, values: [] },
+            ofsy:   { col: null, values: [] },
+            ofsz:   { col: null, values: [] },
+            mofsx:  { col: null, values: [] },
+            mofsy:  { col: null, values: [] },
+            mofsz:  { col: null, values: [] },
         },
         curr: {
             exists:  false,
@@ -268,6 +270,29 @@ exports.process = function(json) {
                 break;
 
             case 'COMPASS':
+            case 'MAG':
+                processed.mag.exists = true;
+                processed.mag.timems.values.push( [rowNum, parseFloat(row[processed.mag.timems.col]) ] );
+                
+                var x = parseFloat(row[processed.mag.magx.col]),
+                y = parseFloat(row[processed.mag.magy.col]),
+                z = parseFloat(row[processed.mag.magz.col]),
+                f = Math.sqrt( Math.pow(Math.abs(x),2) + Math.pow(Math.abs(y),2) + Math.pow(Math.abs(z),2) );
+
+                processed.mag.magx.values.push( [rowNum, x ] );
+                processed.mag.magy.values.push( [rowNum, y ] );
+                processed.mag.magz.values.push( [rowNum, z ] );
+
+                processed.mag.magf.values.push( [rowNum, f ] );
+
+                processed.mag.ofsx.values.push( [rowNum, parseFloat(row[processed.mag.ofsx.col]) ] );
+                processed.mag.ofsy.values.push( [rowNum, parseFloat(row[processed.mag.ofsy.col]) ] );
+                processed.mag.ofsz.values.push( [rowNum, parseFloat(row[processed.mag.ofsz.col]) ] );
+
+                processed.mag.mofsx.values.push( [rowNum, parseFloat(row[processed.mag.mofsx.col]) ] );
+                processed.mag.mofsy.values.push( [rowNum, parseFloat(row[processed.mag.mofsy.col]) ] );
+                processed.mag.mofsz.values.push( [rowNum, parseFloat(row[processed.mag.mofsz.col]) ] );
+
 
                 break;
 

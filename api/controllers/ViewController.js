@@ -35,7 +35,7 @@ module.exports = {
             return res.notfound();
           } else {
             
-            if (typeof log.build == "undefined" || log.build < 1) {
+            if (typeof log.build == "undefined" || log.build < 2) {
               return res.redirect('rebuild/' + log.logId);
             }
 
@@ -134,8 +134,10 @@ module.exports = {
             header.logContains.gps  = processed.gps.exists;
             header.logContains.imu  = processed.imu.exists;
             header.logContains.ntun  = processed.ntun.exists;
+            header.logContains.mag  = processed.mag.exists;
 
-            header.build = 1;
+
+            header.build = 2;
 
             // save the updated value
             header.save(function(err) {
