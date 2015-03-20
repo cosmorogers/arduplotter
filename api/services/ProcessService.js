@@ -4,6 +4,8 @@ exports.process = function(json) {
         'ctun' : {
             'dcrt' : 'dcrate',
             'crt'  : 'crate',
+            'dsalt' : 'wpalt',
+            'salt' : 'sonalt'
         },
         'att' : {
             'desroll' : 'rollin',
