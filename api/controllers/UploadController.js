@@ -19,14 +19,72 @@ module.exports = {
   
   index: function (req, res) {
     if (req.method === 'POST') {
+
       var fs = require('fs');       
       // read temporary file
       //Validate uploaded file
       var mime = require('mime');
 
-      if (mime.lookup(req.files.flightlog.path) == 'text/plain') {
 
-        fs.stat(req.files.flightlog.path, function (err, stats) {
+      req.file('flightlog').upload(function( err, files) {
+        if (err) {
+
+        } else {
+          //Do quick initial filter
+          var file = files[0];
+          console.log(file);
+          if (mime.lookup(file.fd) == 'text/plain') {
+            sails.log.debug(["File upload", file]);
+            var publisher = sails.hooks.publisher;
+
+            //Create a flight to redirect the user to
+            Flight.create({
+              processed: false,
+            }, function (err, flight){
+
+              if (err) {
+
+              } else {
+                 //Create a job to process this new flight
+                var job = publisher.create('flight', {
+                  'title'  : 'Processing Log', //title for kue
+                  'file'   : file, //the file to process
+                  'flight' : flight //the flight reference
+                }).save();
+
+                //Redirect the user to the log page (will show it as processing until complete)
+                var url = 'view/' + flight.id;
+                if (req.isAjax || req.isJson) {
+                  return res.send({redirect: url});
+                } else {                
+                  return res.redirect(url);
+                }
+              }
+
+            }); 
+
+
+            
+
+          } else {
+            //Not a plain text file
+            if (req.isAjax || req.isJson) {
+              return res.send({error: 'invalid'});
+            } else {                
+              return res.view({
+                active: 'upload',
+                error: true,
+                toobig: false
+              });
+            }
+          }
+        }        
+      });
+
+
+     /* if (mime.lookup(req.files.flightlog.path) == 'text/plain') {
+
+        fs.stat(req.file('flightlog').path, function (err, stats) {
           fs.readFile(req.files.flightlog.path, function (err, data) {
             //console.log(data);
             // save file
@@ -80,7 +138,7 @@ module.exports = {
             toobig: false
           });
         }
-      }
+      }*/
     } else {
       // Send a JSON response
       return res.view({

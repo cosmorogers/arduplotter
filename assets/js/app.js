@@ -339,18 +339,23 @@ var modules = {
 		init: function(data) {
 			this.initd = true;
 			app.graphs.push($.plot('#altitude-graph',[
-					{
+					/*{
 						label: 'GPS', 
 						data: data.gps.alt.values,
 						color: app.settings.colours[0],
-					}, {
+					},*/
+					 {
 						label: 'GPS Rel', 
 						data: data.gps.relalt.values,
 						color: app.settings.colours[2],
 					},{
+						label: 'DS Alt', 
+						data: data.ctun.wpalt.values,
+						color: '#0f0',
+					}, {
 						label: 'Sonar', 
-						data: data.ctun.sonalt.values,
-						color: app.settings.colours[3],
+						data: data.ctun.alt.values,
+						color: app.settings.colours[0],
 					}, {
 						label: 'Barometer', 
 						data: data.ctun.baralt.values,
@@ -365,6 +370,12 @@ var modules = {
 			    series: { shadowSize: 0 },
 					crosshair: { mode: "x" },
 			    xaxis: { ticks:[] },
+			    zoom: {
+						interactive: true
+					},
+					pan: {
+						interactive: true
+					}
 			  }
 		  ));
 		  app.graphs.push($.plot('#throttle-graph',[

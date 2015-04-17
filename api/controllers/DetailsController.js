@@ -150,8 +150,7 @@ module.exports = {
 
 function loadLog(req, res, cb) {
   if (req.param('id')) {
-    FlightLog.findOne(req.param('id'))
-    .done(function(err, log) {
+    FlightLog.findOne(req.param('id'), function(err, log) {
       if (err) {
             console.log("not found", res);
 

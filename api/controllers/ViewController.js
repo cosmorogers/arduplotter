@@ -26,28 +26,31 @@ module.exports = {
 			});
     });*/
     if (req.param('id')) {
-      FlightLogHeader.findOneByLogId(req.param('id'))
-        .done(function(err, log) {
+      Flight.findOne(req.param('id'), function(err, log) {
         if (err) {
-          return res.notfound();
+          return res.notFound();
         } else {
           if (typeof log == 'undefined') {
-            return res.notfound();
+            return res.notFound();
           } else {
             
-            if (typeof log.build == "undefined" || log.build < 2) {
+            /*if (typeof log.build == "undefined" || log.build < 2) {
               return res.redirect('rebuild/' + log.logId);
-            }
+            }*/
 
-            return res.view({
-              'log' : log,
-              //'processed' : processed
-            });
+            if (log.processed) {
+              return res.view({
+                'log' : log,
+                //'processed' : processed
+              });
+            } else {
+              return res.view('view/processing', { flight: log });
+            }
           }
         }
       });
     } else {
-      return res.notfound();
+      return res.notFound();
     }
 
   },
@@ -192,16 +195,16 @@ function loadLog(req, res, cb) {
       if (err) {
             console.log("not found", res);
 
-        return res.notfound();
+        return res.notFound();
 	    } else {
         if (typeof log == 'undefined') {
-          return res.notfound();
+          return res.notFound();
         } else {
           return cb(req, res, log);
         }
       }
     });
   } else {
-    return res.notfound();
+    return res.notFound();
   }
 }
