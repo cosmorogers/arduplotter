@@ -9,17 +9,13 @@ describe('adapter', function() {
   before(function(done) {
     var Schema;
 
-    // Register The Collection
-    Adapter.registerCollection({ identity: 'test', config: Config }, function(err) {
-      if(err) done(err);
+    var connection = Config;
+    connection.identity = 'test';
 
-      // Define The Collection
-      Adapter.define('test', Fixture, function(err, schema) {
-        if(err) return done(err);
-        Schema = schema;
-        done();
-      });
-    });
+    var collection = { identity: 'foobar', definition: Fixture };
+    collection.definition.connection = 'test';
+
+    Adapter.registerConnection(connection, { 'foobar': collection }, done);
   });
 
 
@@ -27,7 +23,7 @@ describe('adapter', function() {
 
     it('should allow direct access to the collection object', function(done) {
 
-      Adapter.native('test', function(err, collection) {
+      Adapter.native('test', 'foobar', function(err, collection) {
         assert(!err);
 
         // Attempt to insert a document
