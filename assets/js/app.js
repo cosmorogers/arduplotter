@@ -504,12 +504,12 @@ var modules = {
 			$.plot('#gps-status-graph',[
 					{
 						label: 'Status', 
-						data: data.gps.status.values,
+						data: data.gps.status,
 						color: app.settings.colours[0],
 					},
 					{
 						label: 'HDop', 
-						data: data.gps.hdop.values,
+						data: data.gps.hdop,
 						color: app.settings.colours[1],
 					}
 				], {
@@ -527,7 +527,7 @@ var modules = {
 			$.plot('#gps-satellites-graph',[
 					{
 						label: 'Satellites', 
-						data: data.gps.nsats.values,
+						data: data.gps.nsats,
 						color: app.settings.colours[0],
 					}
 				], {
@@ -545,7 +545,7 @@ var modules = {
 			$.plot('#gps-speed-graph',[
 					{
 						label: 'Speed', 
-						data: data.gps.spd.values,
+						data: data.gps.spd,
 						color: app.settings.colours[0],
 					},
 					{
@@ -734,9 +734,3 @@ var modules = {
 		}
 	}
 }
-
-
-
-$(function() {
-	app.init();  
-});

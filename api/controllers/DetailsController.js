@@ -46,12 +46,20 @@ module.exports = {
 	},
 
 	gps: function(req, res) {
-		return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-			res.contentType('javascript');
+		flightId = req.param('id').trim();
+		var lats = [], lngs = [], status = [], hdop = [], nsats = [], spd = [], time = [], relalt = [], alt = [], gcrs =[];
 
-			return res.send({gps: processed.gps});
-		});
+		FlightChannel
+			.findOne()
+			.where({_flight: flightId})
+			.where({_name: 'gps'})
+			.exec(function(err, channel){
+				res.contentType('javascript');
+				return res.send({gps: channel});
+
+			});
+
+		
 	},
 
 	imu: function(req, res) {
@@ -101,6 +109,7 @@ module.exports = {
 	},
 
 	markers: function(req, res) {
+		return res.notFound();
 		return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 
@@ -150,14 +159,14 @@ module.exports = {
 
 function loadLog(req, res, cb) {
   if (req.param('id')) {
-    FlightLog.findOne(req.param('id'), function(err, log) {
+    FlightDetail.find({_flight: req.param('id')}, function(err, logs) {
       if (err) {
             console.log("not found", res);
 
-        return res.notfound();
+        return res.notFound();
 	    } else {
         if (typeof log == 'undefined') {
-          return res.notfound();
+          return res.notFound();
         } else {
           return cb(req, res, log);
         }
