@@ -33,7 +33,9 @@ module.exports = {
           //Do quick initial filter
           var file = files[0];
           if (mime.lookup(file.fd) == 'text/plain') {
-            sails.log.debug(["File upload", file]);
+
+            sails.log.silly(["File upload", file]);
+            
             var publisher = sails.hooks.publisher;
 
             //Create a flight to redirect the user to

@@ -83,7 +83,7 @@ module.exports = {
     var perPage = 20;
     var page = 1;
 
-    FlightLogHeader.count(function(err, num) {
+    Flight.count(function(err, num) {
       if (!err) {
         var count = num;
         var page = 1;
@@ -99,7 +99,7 @@ module.exports = {
 
         var skip = (page - 1) * perPage;
         
-        FlightLogHeader.find()
+        Flight.find()
           .sort('createdAt DESC')
           .limit(perPage)
           .skip(skip)

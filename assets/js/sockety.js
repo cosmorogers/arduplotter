@@ -8,6 +8,11 @@
  */
 
 var waitForUpload = function(id) {
+	io.socket.on('upload-progress', function(data){ 
+		if (id === data.id) {
+			$('#progress-msg').text(data.msg);
+		}
+	});
   io.socket.on('processed', function(data){ 
     if (id === data.id) {
       window.location.reload(); 
