@@ -676,20 +676,23 @@ var modules = {
 						yaxis: { min: -500, max: 500 }
 					})
 				);
-				ntunplot.res
+				//ntunplot.res
 
-			// don't fire event on the overview to prevent eternal loop
+					// don't fire event on the overview to prevent eternal loop
 
-			//overview.setSelection(ranges, true);
-		});
+					//overview.setSelection(ranges, true);
+				});
 
 		  $.plot('#ntun-velocity-overview-graph',this.data, {
 					grid: {
 			      backgroundColor: { colors: ["#fff", "#eee"] },
 			      markings: app.map.markings 
 			    },
-			    series: { shadowSize: 0 },
-			    //yaxis: { min: -500, max: 500 },
+
+			    series: { shadowSize: 0 ,
+			    	lines: { show: true,lineWidth: 1 }
+			    },
+			    yaxis: { ticks: false, min: -500, max: 500 },
 			    xaxis: { ticks:[] },
 			    selection: { mode: "x" },
 					legend: { show: false },
