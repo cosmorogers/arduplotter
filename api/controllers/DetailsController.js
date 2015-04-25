@@ -17,6 +17,18 @@
 module.exports = {
 
 	power: function(req, res) {
+		return loadLog(req,res, ['gps', 'curr', 'param'], ['curr', 'currtot', 'volt', 'vcc'], function( req, req, data) {
+			var capacity = 0;
+
+			toSend = {
+				power: data.curr, 
+				time: 100, 
+				battery: capacity
+			}
+
+			res.contentType('javascript');
+			return res.send(toSend);			
+		});
 		/*return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 			var capacity = 0;
@@ -30,28 +42,24 @@ module.exports = {
 	},
 
 	altitude: function(req, res) {
-		/*return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-			res.contentType('javascript');
-			return res.send({gps: {alt : processed.gps.alt, relalt: processed.gps.relalt}, ctun: processed.ctun});
-		});*/
+		return loadAndSend(req,res, ['ctun', 'gps'], ['relalt', 'alt', 'wpalt', 'baralt', 'thrin', 'throut', 'crate', 'dcrate']);
 	},
 
 	attitude: function(req, res) {
-		return loadAndSend(req,res,'att');
+		return loadAndSend(req,res,'att', ['rollin', 'roll', 'pitchin', 'pitch', 'yawin', 'yaw', 'navyaw']);
 
 	},
 
 	gps: function(req, res) {
-		return loadAndSend(req,res,'gps');
+		return loadAndSend(req,res,'gps', ['lat', 'lng', 'nsats', 'status', 'spd', 'hdop']);
 	},
 
 	imu: function(req, res) {
-		return loadLog(req,res,'imu', function(req, req, data) {
+		return loadLog(req, res, 'imu', ['accx', 'accy', 'accz'], function(req, res, data) {
 			toSend = {
-				accx: RDPsd(data.accx, 10),
-				accy: RDPsd(data.accy, 10),
-				accz: RDPsd(data.accz, 10)
+				accx: RDPsd(data.imu.accx, 10),
+				accy: RDPsd(data.imu.accy, 10),
+				accz: RDPsd(data.imu.accz, 10)
 			}
 			res.contentType('javascript');
 			return res.send({imu: toSend});
@@ -60,11 +68,12 @@ module.exports = {
 	},
 
 	ntun: function(req, res) {
-		return loadAndSend(req,res,'ntun');
+		return loadAndSend(req,res,'ntun', ['velx', 'dvelx', 'vely', 'dvely']);
 		
 	},
 
 	mag: function(req, res) {
+		return loadAndSend(req,res, ['mag', 'ctun'], ['thrin']);
 		/*return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 			res.contentType('javascript');
@@ -73,6 +82,26 @@ module.exports = {
 	},
 
 	messages: function(req, res) {
+		return loadLog(req,res, ['msg', 'err'] , ['msg', 'subsys', 'ecode'], function(rq,rs,data) {
+
+			if (typeof data.err != "undefined") {
+				if (typeof data.err.subsys != "undefined" && typeof data.err.ecode != "undefined" && data.err.subsys.length == data.err.ecode.length) {
+					data.err.err = [];
+
+					for (i in data.err.subsys) {
+						//																						row										subsys									code
+						data.err.err.push(FlightService.getErrorMsg(data.err.subsys[i][0], data.err.subsys[i][1], data.err.ecode[i][1]));
+					}
+					
+					data.err.subsys = null;
+					data.err.ecode = null;
+				} //missing something or too many of something!!				
+			}
+
+			rs.contentType('javascript');
+			return rs.send(data);
+
+		});
 		/*return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 			var warnings = [];
@@ -87,14 +116,14 @@ module.exports = {
 	},
 
 	params: function(req, res) {
-		return loadAndSend(req,res,'param');
+		return loadAndSend(req,res,'parm', 'parm');
 	},
 
 	markers: function(req, res) {
-		return res.notFound();
-		return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
+		
 
+		return loadLog(req, res, ['gps', 'mode', 'cam'], ['lat', 'lng', 'mode'], function(req, res, data) {
+			
 			var backgroundColours = {
 				'alt_hold': '#e7b1b2',
 				'althold': '#e7b1b2',
@@ -108,15 +137,25 @@ module.exports = {
 		    'poshold': '#f8e8a6',
 			};
 
-			var markings = [];
-		  for (var k in processed.mode.modes) {
-		    markings.push({xaxis: { from: processed.mode.modes[k].start, to: processed.mode.modes[k].end },color: backgroundColours[processed.mode.modes[k].name.toLowerCase()], name: processed.mode.modes[k].name});
+			data.markings = [];
+		  for (k in data.mode.mode) {
+		    data.markings.push(
+		    	{
+		    		xaxis: { 
+		    			from: data.mode.mode[k].start, 
+		    			to: data.mode.mode.end 
+		    		},
+		    		color: backgroundColours[data.mode.mode[k].name.toLowerCase()], 
+		    		name: data.mode.mode[k].name
+		    	}
+	    	);
 		  }
 
 			res.contentType('text/plain');
-			return res.send({
-				exists: (processed.gps.exists || processed.cam.exists), 
-				lat: processed.gps.lat.values, 
+			return res.send(data);
+			/*return res.send({
+				//exists: (processed.gps.exists || processed.cam.exists), 
+				lat: log.gps.lat, 
 				lng: processed.gps.lng.values, 
 				markings: markings, 
 				cam: {lat: processed.cam.lat.values, lng: processed.cam.lng.values},
@@ -125,7 +164,7 @@ module.exports = {
 					last: processed.gps.readings[processed.gps.readings.length - 1],
 					length: processed.gps.readings.length
 				}
-			});
+			});*/
 		});
 	},
 
@@ -139,15 +178,16 @@ module.exports = {
 };
 
 
-function loadLog(req, res, channel, cb) {
+function loadLog(req, res, channels, types, cb) {
   if (req.param('id')) {
 
   	flightId = req.param('id').trim();
 
 		FlightChannel
-		.findOne()
-		.where({_flight: flightId})
-		.where({_name: channel})
+		.find()
+		.where({flight: flightId})
+		.where({name: channels})
+		.where({type: types})
 		.exec(function(err, data){
 			if (err) {
 				sails.log.warn("Error finding log channel", err);
@@ -155,7 +195,28 @@ function loadLog(req, res, channel, cb) {
 			} else if (typeof data == 'undefined') {
 				return res.notFound();
 			} else {
-				return cb(req,res,data);
+
+				ret = {};
+
+				var async = require('async');
+				async.each(data, function(i, cb) {
+					name = i.name;
+					if (typeof ret[name] == "undefined") { 
+						ret[name] = {};
+					}
+
+					type = i.type;
+//					if (i.values.length < 10000) {
+						ret[name][type] = i.values;
+//					}	else {
+//						Details:  RangeError: Maximum call stack size exceeded
+//						ret[name][type] = RDPsd(i.values, 15);
+//					}
+					cb();
+
+				}, function(err) {
+					return cb(req,res,ret);
+				});
 			}
 		});
   } else {
@@ -163,13 +224,11 @@ function loadLog(req, res, channel, cb) {
   }
 }
 
-function loadAndSend(req, res, channel) {
+function loadAndSend(req, res, channels, types) {
 
-	loadLog(req, res, channel, function(rq,rs,data) {
-		//rq.contentType('javascript');
-		var ret = {};
-		ret[channel] = data
-		return rs.send(ret);
+	loadLog(req, res, channels, types, function(rq,rs,data) {
+		rs.contentType('javascript');
+		return rs.send(data);
 	});
 
 }

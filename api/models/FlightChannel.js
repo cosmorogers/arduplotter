@@ -7,7 +7,9 @@
 
 module.exports = {
   attributes: {
-    
+    name   : { type: 'string', index: true },
+    type   : { type: 'string', index: true},
+    flight : { type: 'string', index: true },
   },
 };
 

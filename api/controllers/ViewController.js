@@ -39,7 +39,6 @@ module.exports = {
             }*/
 
             if (log.processed) {
-              console.log(log);
               return res.view({
                 'log' : log,
                 //'processed' : processed

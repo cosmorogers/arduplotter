@@ -19,22 +19,34 @@ module.exports = {
   
   index: function (req, res) {
     if (req.method === 'POST') {
-
       var fs = require('fs');       
       // read temporary file
       //Validate uploaded file
       var mime = require('mime');
 
 
-      req.file('flightlog').upload(function( err, files) {
+      req.file('flightlog').upload({
+        maxBytes: 50000000
+      }, function( err, files) {
         if (err) {
+
+          sails.log.info("Upload error", err);
+          if (req.isAjax || req.isJson) {
+            return res.send({error: 'toobig'});
+          } else {                
+            return res.view({
+              active: 'upload',
+              error: false,
+              toobig: true
+            });
+          }
 
         } else {
           //Do quick initial filter
           var file = files[0];
           if (mime.lookup(file.fd) == 'text/plain') {
 
-            sails.log.silly(["File upload", file]);
+            sails.log.info(["File upload", file]);
             
             var publisher = sails.hooks.publisher;
 
@@ -46,20 +58,30 @@ module.exports = {
               if (err) {
 
               } else {
-                 //Create a job to process this new flight
-                var job = publisher.create('flight', {
-                  'title'  : 'Processing Log', //title for kue
-                  'file'   : file, //the file to process
-                  'flight' : flight //the flight reference
-                }).save();
 
-                //Redirect the user to the log page (will show it as processing until complete)
-                var url = 'view/' + flight.id;
-                if (req.isAjax || req.isJson) {
-                  return res.send({redirect: url});
-                } else {                
-                  return res.redirect(url);
-                }
+                var crypto = require('crypto'), fs = require('fs');
+                fs.readFile(file.fd, function (err, data) {
+                  hash = crypto.createHash('md5')
+                               .update(data, 'utf8')
+                               .digest('hex');
+              
+                   //Create a job to process this new flight
+                  var job = publisher.create('flight', {
+                    'title'  : 'Processing Log', //title for kue
+                    'file'   : file, //the file to process
+                    'flight' : flight, //the flight reference
+                    'hash'   : hash //the file hash
+                  }).save();
+
+                  //Redirect the user to the log page (will show it as processing until complete)
+                  var url = 'view/' + flight.id;
+                  if (req.isAjax || req.isJson) {
+                    return res.send({redirect: url});
+                  } else {                
+                    return res.redirect(url);
+                  }
+
+                });
               }
 
             }); 
