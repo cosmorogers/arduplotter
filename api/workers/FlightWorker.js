@@ -43,57 +43,125 @@ module.exports = {
         };
 
        	var knownData = {
+          atde: {
+            mapped: false, mappings: {},
+            hasColumns: ['angle', 'rate']
+          },
           att: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['timems','rollin', 'roll', 'pitchin', 'pitch', 'yawin', 'yaw', 'navyaw', 'errrp', 'erryaw']
           },
+          atun: {
+            mapped: false, mappings: {},
+            hasColumns: ['axis','tunestep','ratemin','ratemax','rpgain','rdgain','spgain']
+          },
+          baro: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','alt','press','temp','crt']
+          },
           cam: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['gpstime','gpsweek','lat','lng','alt', 'relalt','roll','pitch','yaw']
           },
+          cmd: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','ctot','cnum','cid','prm1','prm2','prm3','prm4','lat','lng','alt']
+          },
           curr: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['timems', 'thr', 'thrint', 'throut', 'volt', 'curr', 'vcc', 'currtot']
           },
           ctun: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['timems','thrin','sonalt','baralt','wpalt','navthr','angbst','crate','throut','dcrate','alt']
           },
+          d16: {
+            mapped: false, mappings: {},
+            hasColumns: ['id' ,'value']
+          },
+          d32: {
+            mapped: false, mappings: {},
+            hasColumns: ['id' ,'value']
+          },
+          dflt: {
+            mapped: false, mappings: {},
+            hasColumns: ['id' ,'value']
+          },
+          du16: {
+            mapped: false, mappings: {},
+            hasColumns: ['id' ,'value']
+          },
+          du32: {
+            mapped: false, mappings: {},
+            hasColumns: ['id' ,'value']
+          },
           err: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['subsys' ,'ecode']
           },
+          ev: {
+            mapped: false, mappings: {},
+            hasColumns: ['id']
+          },
        		fmt: { 
-       			exists: false, 
+       			 
        		},
           gps: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['status' ,'time' ,'week', 'nsats' ,'hdop' ,'lat' ,'lng' ,'relalt' ,'alt' ,'spd' ,'gcrs', 'vz', 't']
           },
           imu: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: [ 'timems','gyrx','gyry','gyrz','accx','accy','accz']
           },
           mag: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['timems' ,'magx' ,'magy' ,'magz' ,'ofsx','ofsy','ofsz','mofsx','mofsy','mofsz']
           },
           mode: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['mode', 'thrcrs']
           },
           msg: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['msg']
           },
           ntun: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['timems', 'dposx', 'dposy', 'posx', 'posy', 'dvelx','dvely','velx','vely','dacx','dacy','drol','dpit']
           },
+          of: {
+            mapped: false, mappings: {},
+            hasColumns: ['dx','dy','squal','x','y','roll','pitch']
+          },
           parm: {
-            exists: false, mapped: false, mappings: {},
+            mapped: false, mappings: {},
             hasColumns: ['name' ,'value']
           },
+          pm: {
+            mapped: false, mappings: {},
+            hasColumns: ['nlon','nloop','maxt','pmt','i2cerr','inserr','inaverr' ]
+          },
+          powr: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','vcc','vservo','flags']
+          },
+          rad: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','rssi','remrssi','txbuf','noise','remnoise','rxerrors','fixed']
+          },
+          rcin: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems', 'c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14']
+          },
+          rcou: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
+          },
+          strt: {
+            mapped: false, mappings: {},
+            hasColumns: []
+          }
        	}
 
         var logContains = {};
@@ -117,7 +185,6 @@ module.exports = {
                 //Gonna assume FMT data is always in the same format :)
                 //console.log(row);
 
-                knownData.fmt.exists = true;
                 val = row[3].trim().toLowerCase();
                 formats = row[4].trim();
                 columns = row.slice(5);
@@ -234,14 +301,64 @@ module.exports = {
 
                       itemName = knownData[rowName].mappings[colIndex].name;
                       itemFormat = knownData[rowName].mappings[colIndex].format;
+                      itemValue = FlightService.format(row[colIndex], itemFormat);
 
-                      channels[rowName][itemName].values.push([rowNumber, FlightService.format(row[colIndex], itemFormat)]);
+                      channels[rowName][itemName].values.push([rowNumber, itemValue]);
+
+                      if (rowName == "gps" && itemName == 'spd') {
+                        if (typeof channels.gps.avgspd == "undefined") {
+                          channels.gps.avgspd = { name: "gps",  flight: flightId, type: "avgspd", values: [], average: 0 }
+                        }
+
+                        channels.gps.avgspd.average += itemValue;
+                        channels.gps.avgspd.values.push([rowNumber, channels.gps.avgspd.average / channels.gps.spd.values.length]);
+
+                      }
+
+                      if (rowName == "curr") {
+
+                        if (itemName == "vcc") {
+                          //VCC for some unknown reason it *1000...
+                          vcc = channels.curr.vcc.values[channels.curr.vcc.values.length - 1][1] / 1000;
+                          channels.curr.vcc.values[channels.curr.vcc.values.length - 1][1] = vcc;
+                        } else if (itemName == "volt") {
+                          //volt is *100....
+                          volt = channels.curr.volt.values[channels.curr.volt.values.length - 1][1] / 100;
+                          channels.curr.volt.values[channels.curr.volt.values.length - 1][1] = volt;
+
+                        } else if (itemName == "curr") {
+                          //curr is *100
+                          curr = channels.curr.curr.values[channels.curr.curr.values.length - 1][1] / 100;
+                          channels.curr.curr.values[channels.curr.curr.values.length - 1][1] = curr;
+
+                          if (typeof channels.curr.avgcurr == "undefined") {
+                            channels.curr.avgcurr = { name: "curr",  flight: flightId, type: "avgcurr", values: [], average: 0 }
+                          }
+
+                          channels.curr.avgcurr.average += curr;
+                          channels.curr.avgcurr.values.push([rowNumber, channels.curr.avgcurr.average / channels.curr.curr.values.length]);                        
+                        }
+                      }
 
                     } else {
                       //Hmm appears to be a unmapped row index. I wonder what it could be...
                       //unknown data we can pull from S3 when redoing
                     }
                   }
+                }
+
+                if (rowName == "mag" && typeof channels.mag.magx != "undefined" && typeof channels.mag.magy != "undefined" && typeof channels.mag.magz != "undefined") {
+                  //Calculate special magentic field after auto adding data above :)
+                  x = channels.mag.magx.values[channels.mag.magx.values.length -1][1];
+                  y = channels.mag.magy.values[channels.mag.magy.values.length -1][1];
+                  z = channels.mag.magz.values[channels.mag.magz.values.length -1][1];
+                  f = Math.sqrt( Math.pow(Math.abs(x),2) + Math.pow(Math.abs(y),2) + Math.pow(Math.abs(z),2) );
+
+                  if (typeof channels.mag.magfield == "undefined") {
+                    channels.mag.magfield = { name: "mag",  flight: flightId, type: "magfield", values: [] };
+                  }
+
+                  channels.mag.magfield.values.push([rowNumber, f]);
                 }
 
               } //else unknown row, but fmt should have taken care of alerting me
@@ -260,6 +377,16 @@ module.exports = {
             if (noOfModes > 0) {
               channels.mode.mode.values[noOfModes - 1].end = rowNumber;
             }
+
+/* Totally reduntant, just get last avgspd!!!
+            if (typeof channels.gps.avgspd != "undefined") {
+              if (typeof channels.gps.totavgspd == "undefined") {
+                average = channels.gps.avgspd.average / channels.gps.avgspd.values.length;
+                channels.gps.totavgspd = { name: "gps",  flight: flightId, type: "totavgspd", values: [[0, average]] }
+              }
+            }
+*/
+
 
 						//update flight
             sails.sockets.blast("upload-progress", {id: flightId, msg: "Saving data"});

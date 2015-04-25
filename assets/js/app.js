@@ -282,6 +282,10 @@ var modules = {
 				label: 'Current', 
 				data: data.power.curr,
 				color: app.settings.colours[0],
+			}, {
+				label: 'Average Current', 
+				data: data.power.avgcurr,
+				color: app.settings.colours[1],
 			}], {
 	    	grid: {
 	    		hoverable: true,
@@ -327,11 +331,13 @@ var modules = {
 	    	xaxis: { ticks:[] },
 	    	crosshair: { mode: "x" },
 	  	}));
-			$('#totCurrent').text(data.power.totcur);
-			$('#avgCurrent').text(data.power.avgcur);
+
+	  	avgcur = data.power.avgcurr[data.power.avgcurr.length -1][1].toFixed(2);
+			$('#totCurrent').text(data.power.currtot[data.power.currtot.length - 1][1].toFixed(2));
+			$('#avgCurrent').text(avgcur);
 
 			$('#batteryCapacityInput').val(data.battery.toFixed(0));
-			$('#currentDrawInput').val(data.power.avgcur);
+			$('#currentDrawInput').val(avgcur);
 			$('#flightDuration').val(data.time / 60000);
 			$('.flight-duration-cal').change();
 		}
@@ -552,7 +558,7 @@ var modules = {
 					},
 					{
 						label: 'Avg Speed', 
-						data: data.gps.lAvgSpd,
+						data: data.gps.avgspd,
 						color: app.settings.colours[1],
 					}
 				], {
@@ -566,7 +572,7 @@ var modules = {
 			    crosshair: { mode: "x" },
 			  }
 		  );
-			$('#avgSpeed').text(data.gps.avgSpd);
+			$('#avgSpeed').text(data.gps.avgspd[data.gps.avgspd.length - 1][1].toFixed(2));
 		}
 	},
 	imu : {
@@ -655,7 +661,6 @@ var modules = {
 
 			var that = this;
 			$("#ntun-velocity-graph").bind("plotselected", function (event, ranges) {
-				console.log("low", event, ranges);
 				// clamp the zooming to prevent eternal zoom
 				if (ranges.xaxis.to - ranges.xaxis.from < 0.00001) {
 					ranges.xaxis.to = ranges.xaxis.from + 0.00001;
@@ -692,7 +697,6 @@ var modules = {
 		  );
 
 		  $("#ntun-velocity-overview-graph").bind("plotselected", function (event, ranges) {
-		  	console.log("hi", event, ranges);
 				ntunplot.setSelection(ranges);
 			});
 
@@ -705,12 +709,12 @@ var modules = {
 			$.plot('#mag-graph',[
 					{
 						label: 'Magnetic Field', 
-						data: data.mag.magf,
+						data: data.mag.magfield,
 						color: app.settings.colours[0],
 					},
 					{
 						label: 'Throttle',
-						data: data.thr,
+						data: data.ctun.thrin,
 						color: app.settings.colours[1],
 					}
 				], {

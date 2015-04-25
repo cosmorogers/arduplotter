@@ -17,12 +17,24 @@
 module.exports = {
 
 	power: function(req, res) {
-		return loadLog(req,res, ['gps', 'curr', 'param'], ['curr', 'currtot', 'volt', 'vcc'], function( req, req, data) {
+		return loadLog(req,res, ['gps', 'curr', 'parm'], ['curr', 'currtot', 'volt', 'vcc', 'avgcurr', 'parm', 'timems', 'time'], function( req, req, data) {
 			var capacity = 0;
+
+			if (typeof data.parm.parm != "undefined" && typeof data.parm.parm.BATT_CAPACITY != "undefined") {
+				capacity = data.parm.parm.BATT_CAPACITY;
+			}
+
+			duration = 0;
+			//GPS seems better for duration
+			if (typeof data.gps.time != "undefined") {
+				duration = (data.gps.time[data.gps.time.length - 1][1] - data.gps.time[0][1]) / 1000;
+			} else if (typeof data.curr.timems != "undefined") {
+				duration = data.curr.timems[data.curr.timems.length - 1][1] - data.curr.timems[0][1];
+			}
 
 			toSend = {
 				power: data.curr, 
-				time: 100, 
+				time: duration, 
 				battery: capacity
 			}
 
@@ -51,15 +63,15 @@ module.exports = {
 	},
 
 	gps: function(req, res) {
-		return loadAndSend(req,res,'gps', ['lat', 'lng', 'nsats', 'status', 'spd', 'hdop']);
+		return loadAndSend(req,res,'gps', ['lat', 'lng', 'nsats', 'status', 'spd', 'hdop', 'avgspd']);
 	},
 
 	imu: function(req, res) {
 		return loadLog(req, res, 'imu', ['accx', 'accy', 'accz'], function(req, res, data) {
 			toSend = {
-				accx: RDPsd(data.imu.accx, 10),
-				accy: RDPsd(data.imu.accy, 10),
-				accz: RDPsd(data.imu.accz, 10)
+				accx: RDPsd(data.imu.accx, 2.5),
+				accy: RDPsd(data.imu.accy, 2.5),
+				accz: RDPsd(data.imu.accz, 2.5)
 			}
 			res.contentType('javascript');
 			return res.send({imu: toSend});
@@ -73,7 +85,7 @@ module.exports = {
 	},
 
 	mag: function(req, res) {
-		return loadAndSend(req,res, ['mag', 'ctun'], ['thrin']);
+		return loadAndSend(req,res, ['mag', 'ctun'], ['thrin', 'magfield']);
 		/*return loadLog(req, res, function(req, res, log) {
 			processed = ProcessService.process(log.json);
 			res.contentType('javascript');
@@ -150,6 +162,14 @@ module.exports = {
 		    	}
 	    	);
 		  }
+
+		  if (typeof data.gps != "undefined" && typeof data.gps.lat != "undefined") {
+			  data.readings = {
+			  	first: data.gps.lat[0][0],
+			  	last: data.gps.lat[data.gps.lat.length - 1][0],
+			  	length: data.gps.lat.length
+			  }
+			} // else no gps data :(
 
 			res.contentType('text/plain');
 			return res.send(data);
