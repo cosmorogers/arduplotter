@@ -26,9 +26,9 @@ module.exports = {
 
 			duration = 0;
 			//GPS seems better for duration
-			if (typeof data.gps.time != "undefined") {
+			if (typeof data.gps != "undefined" && typeof data.gps.time != "undefined") {
 				duration = (data.gps.time[data.gps.time.length - 1][1] - data.gps.time[0][1]) / 1000;
-			} else if (typeof data.curr.timems != "undefined") {
+			} else if (typeof data.curr != "undefined" && typeof data.curr.timems != "undefined") {
 				duration = data.curr.timems[data.curr.timems.length - 1][1] - data.curr.timems[0][1];
 			}
 
@@ -69,9 +69,9 @@ module.exports = {
 	imu: function(req, res) {
 		return loadLog(req, res, 'imu', ['accx', 'accy', 'accz'], function(req, res, data) {
 			toSend = {
-				accx: RDPsd(data.imu.accx, 2.5),
-				accy: RDPsd(data.imu.accy, 2.5),
-				accz: RDPsd(data.imu.accz, 2.5)
+				accx: RDPsd(data.imu.accx, 3),
+				accy: RDPsd(data.imu.accy, 3),
+				accz: RDPsd(data.imu.accz, 3)
 			}
 			res.contentType('javascript');
 			return res.send({imu: toSend});
@@ -105,8 +105,8 @@ module.exports = {
 						data.err.err.push(FlightService.getErrorMsg(data.err.subsys[i][0], data.err.subsys[i][1], data.err.ecode[i][1]));
 					}
 					
-					data.err.subsys = null;
-					data.err.ecode = null;
+					delete data.err.subsys;
+					delete data.err.ecode;
 				} //missing something or too many of something!!				
 			}
 
@@ -150,18 +150,20 @@ module.exports = {
 			};
 
 			data.markings = [];
-		  for (k in data.mode.mode) {
-		    data.markings.push(
-		    	{
-		    		xaxis: { 
-		    			from: data.mode.mode[k].start, 
-		    			to: data.mode.mode.end 
-		    		},
-		    		color: backgroundColours[data.mode.mode[k].name.toLowerCase()], 
-		    		name: data.mode.mode[k].name
-		    	}
-	    	);
-		  }
+		  if (typeof data.mode != "undefined" && typeof data.mode.mode != "undefined") {
+		  	for (k in data.mode.mode) {
+			    data.markings.push(
+			    	{
+			    		xaxis: { 
+			    			from: data.mode.mode[k].start, 
+			    			to: data.mode.mode.end 
+			    		},
+			    		color: backgroundColours[data.mode.mode[k].name.toLowerCase()], 
+			    		name: data.mode.mode[k].name
+			    	}
+		    	);
+			  }
+			}
 
 		  if (typeof data.gps != "undefined" && typeof data.gps.lat != "undefined") {
 			  data.readings = {

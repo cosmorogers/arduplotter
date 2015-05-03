@@ -174,8 +174,10 @@ module.exports = {
 
 				csv
 					.fromPath(file.fd)
-					.on("data", function(row){
+					.on("data", function(row) {
 						//A row of the log. Do something interesting with it.
+            //console.log(row);
+
             rowNumber++;
             rowData = {_type: '', _row: rowNumber, _flight: flightId};
 
@@ -183,7 +185,6 @@ module.exports = {
               rowName = row[0].trim().toLowerCase();
               if (rowName === 'fmt') {
                 //Gonna assume FMT data is always in the same format :)
-                //console.log(row);
 
                 val = row[3].trim().toLowerCase();
                 formats = row[4].trim();
@@ -193,7 +194,7 @@ module.exports = {
 
                 if (typeof knownData[val] != "undefined") { //I know about this FMT row 
 
-                  if (val !== 'fmt') { //Not the FMT FMT data!
+                  if (val !== 'fmt' && !knownData[val].mapped) { //Not the FMT FMT data, and not already mapped!
                     //Just cos in FMT doesn't mean there is any of it!
                     //logContains[val] = true; //the log contains this!
 

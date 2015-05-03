@@ -607,7 +607,8 @@ var modules = {
       			]
 			    },
 			    series: { shadowSize: 0 },
-			    xaxis: { ticks:[] },
+			    xaxis: { ticks:[], panRange: [0, data.imu.accx[data.imu.accx.length - 1][0]+100 ] },
+			    yaxis: { panRange: [-90, 90] },
 			    crosshair: { mode: "x" },
 			    zoom: {
 						interactive: true
@@ -744,7 +745,7 @@ var modules = {
 		init: function(data) {
 			this.initd = true;
 			
-			if (typeof data.msg.msg != "undefined" && data.msg.msg.length > 0) {
+			if (typeof data.msg != "undefined" && typeof data.msg.msg != "undefined" && data.msg.msg.length > 0) {
 				for (k in data.msg.msg) {
 					var alert = $('<div class="alert alert-info" />').data('id', data.msg.msg[k][0]);
           var msg = $('<p />').text(data.msg.msg[k][1]);
@@ -753,7 +754,7 @@ var modules = {
 	      }
 			}
 
-			if (typeof data.err.err != "undefined" && data.err.err.length > 0) {
+			if (typeof data.err != "undefined" && typeof data.err.err != "undefined" && data.err.err.length > 0) {
 				for (k in data.err.err) {
 					var alert = $('<div class="alert alert-danger" />');
           var title = $('<strong>').text(data.err.err[k].type)
