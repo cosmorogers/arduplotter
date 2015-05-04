@@ -131,13 +131,18 @@ module.exports = {
 			data.markings = [];
 		  if (typeof data.mode != "undefined" && typeof data.mode.mode != "undefined") {
 		  	for (k in data.mode.mode) {
+		  		modeName = data.mode.mode[k].name;
+		  		if (typeof modeName == "string") {
+		  			modeName = modeName.toLowerCase();
+		  		}// else work out what mode it is suppose to be
+
 			    data.markings.push(
 			    	{
 			    		xaxis: { 
 			    			from: data.mode.mode[k].start, 
 			    			to: data.mode.mode.end 
 			    		},
-			    		color: backgroundColours[data.mode.mode[k].name.toLowerCase()], 
+			    		color: backgroundColours[modeName], 
 			    		name: data.mode.mode[k].name
 			    	}
 		    	);

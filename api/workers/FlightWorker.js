@@ -523,7 +523,53 @@ module.exports = {
                 Flight.update(job.data.flight.id, updateData, function(err, flight) {
                   sails.log.debug("Processing done", {id: flightId, duration: process.hrtime(time)} );
                   sails.sockets.blast("processed", {id: flightId});
-                  done();
+
+                  //Upload the log to S3!
+
+                  var fs = require('fs');
+                  //var zlib = require('zlib');
+                  var AWS = require('aws-sdk'); 
+/*
+                  var body = fs.createReadStream(file.fd).pipe(zlib.createGzip());
+                  var s3obj = new AWS.S3({params: {Bucket: 'arduplotter-logs', Key: flightId}});
+                  s3obj.upload({Body: body}).
+                    on('httpUploadProgress', function(evt) { 
+                      console.log(evt); 
+                    })
+                    .send(function(err, data) { 
+                      console.log(err, data);
+                      done();
+                    });
+*/
+                  var fileStream = fs.createReadStream(file.fd);
+                  fileStream.on('error', function (err) {
+                    if (err) { throw err; }
+                  });  
+                  fileStream.on('open', function () {
+                    var s3 = new AWS.S3();
+                    s3.putObject({
+                      Bucket: 'arduplotter-dev-logs',
+                      Key: flightId + '.log',
+                      Body: fileStream,
+                      ACL:'public-read',
+                      ContentType: 'text/plain',
+                    }, function (err) {
+                      if (err) { 
+                        sails.log.error(err);
+                        throw err; 
+                      } else {
+                        fs.unlink(file.fd, function(err){
+                          if (err) throw err;
+                          done();
+                        });
+                      }
+                    });
+                  });
+
+
+
+
+                  
                 });
               });
             });
