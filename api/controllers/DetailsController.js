@@ -41,16 +41,6 @@ module.exports = {
 			res.contentType('javascript');
 			return res.send(toSend);			
 		});
-		/*return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-			var capacity = 0;
-  		if (typeof processed.params != "undefined" && typeof processed.params.batt_capacity != "undefined") {
-  			capacity = parseFloat(processed.params.batt_capacity.value);
-  		}
-
-			res.contentType('javascript');
-			return res.send({power: processed.curr, time: processed.gps.timeend - processed.gps.timestart, battery: capacity});
-		});*/
 	},
 
 	altitude: function(req, res) {
@@ -69,9 +59,9 @@ module.exports = {
 	imu: function(req, res) {
 		return loadLog(req, res, 'imu', ['accx', 'accy', 'accz'], function(req, res, data) {
 			toSend = {
-				accx: RDPsd(data.imu.accx, 3),
-				accy: RDPsd(data.imu.accy, 3),
-				accz: RDPsd(data.imu.accz, 3)
+				accx: RDPsd(data.imu.accx, 2.5),
+				accy: RDPsd(data.imu.accy, 2.5),
+				accz: RDPsd(data.imu.accz, 2.5)
 			}
 			res.contentType('javascript');
 			return res.send({imu: toSend});
@@ -86,11 +76,6 @@ module.exports = {
 
 	mag: function(req, res) {
 		return loadAndSend(req,res, ['mag', 'ctun'], ['thrin', 'magfield']);
-		/*return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-			res.contentType('javascript');
-			return res.send({mag: processed.mag, thr: processed.ctun.thrin});
-		});*/
 	},
 
 	messages: function(req, res) {
@@ -114,17 +99,11 @@ module.exports = {
 			return rs.send(data);
 
 		});
-		/*return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-			var warnings = [];
-
+		/*
 			if (!processed.fmt.exists) {
 				warnings.push('FMT data missing from log. Some data may be incorrect. <a href="/help/errors#fmt">More on this problem</a>');
 			}
-
-			res.contentType('javascript');
-			return res.send({messages: processed.err, 'warnings': warnings});
-		});*/
+		*/
 	},
 
 	params: function(req, res) {
@@ -175,18 +154,6 @@ module.exports = {
 
 			res.contentType('text/plain');
 			return res.send(data);
-			/*return res.send({
-				//exists: (processed.gps.exists || processed.cam.exists), 
-				lat: log.gps.lat, 
-				lng: processed.gps.lng.values, 
-				markings: markings, 
-				cam: {lat: processed.cam.lat.values, lng: processed.cam.lng.values},
-				readings: {
-					first: processed.gps.readings[0],
-					last: processed.gps.readings[processed.gps.readings.length - 1],
-					length: processed.gps.readings.length
-				}
-			});*/
 		});
 	},
 

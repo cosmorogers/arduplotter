@@ -579,6 +579,19 @@ var modules = {
 		initd : false,
 		init: function(data) {
 			this.initd = true;
+			myMarkings = [];
+
+			for (var i in app.map.markings) {
+    	  if (app.map.markings.hasOwnProperty(i)) {
+         myMarkings.push(app.map.markings[i]);
+        }
+      }
+      //Otherwise lines appear underneath...
+      myMarkings.push({ color: '#000', lineWidth: 2, yaxis: { from: 3, to: 3 } },
+        			{ color: '#000', lineWidth: 2, yaxis: { from: -3, to: -3 } },
+        			{ color: '#A34297', lineWidth: 2, yaxis: { from: -5, to: -5 } },
+        			{ color: '#A34297', lineWidth: 2, yaxis: { from: -15, to: -15 } });
+			
 			$.plot('#vibrations-graph',[
 					{
 						label: 'AccX', 
@@ -599,12 +612,7 @@ var modules = {
 			    grid: {
 		    		hoverable: true,
 			      backgroundColor: { colors: ["#fff", "#eee"] },
-			      markings: [
-			      	{ color: '#000', lineWidth: 2, yaxis: { from: 3, to: 3 } },
-        			{ color: '#000', lineWidth: 2, yaxis: { from: -3, to: -3 } },
-        			{ color: '#A34297', lineWidth: 2, yaxis: { from: -5, to: -5 } },
-        			{ color: '#A34297', lineWidth: 2, yaxis: { from: -15, to: -15 } },
-      			]
+			      markings: myMarkings
 			    },
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[], panRange: [0, data.imu.accx[data.imu.accx.length - 1][0]+100 ] },
@@ -656,7 +664,7 @@ var modules = {
 			    series: { shadowSize: 0 },
 			    xaxis: { ticks:[] },
 			    crosshair: { mode: "x" },
-			    yaxis: { min: -500, max: 500 },
+			    yaxis: { min: -1000, max: 1000 },
 			  };
 			var ntunplot = $.plot('#ntun-velocity-graph',this.data, this.options);
 
@@ -674,7 +682,7 @@ var modules = {
 				ntunplot = $.plot("#ntun-velocity-graph", that.data,
 					$.extend(true, {}, that.options, {
 						xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
-						yaxis: { min: -500, max: 500 }
+						yaxis: { min: -1000, max: 1000 }
 					})
 				);
 				//ntunplot.res

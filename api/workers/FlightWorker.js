@@ -7,8 +7,7 @@ module.exports = {
     //job concurrency
     concurrency: 2,
 
-    //perform sending email
-    //job
+    //perform job
     perform: function(job, done, context) {
         sails.log.debug("Processing Job", job.data.flight.id);
         var time = process.hrtime();
@@ -33,6 +32,9 @@ module.exports = {
           'gps' : {
               'timems' : 'time',
           },
+          'gps2' : {
+              'timems' : 'time'
+          },
           'msg' : {
               'message' : 'msg',
           },
@@ -43,13 +45,17 @@ module.exports = {
         };
 
        	var knownData = {
+          ahr2: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','roll','pitch','yaw','alt','lat','lng']
+          },
           atde: {
             mapped: false, mappings: {},
-            hasColumns: ['angle', 'rate']
+            hasColumns: ['angle','rate']
           },
           att: {
             mapped: false, mappings: {},
-            hasColumns: ['timems','rollin', 'roll', 'pitchin', 'pitch', 'yawin', 'yaw', 'navyaw', 'errrp', 'erryaw']
+            hasColumns: ['timems','rollin','roll','pitchin','pitch','yawin','yaw','navyaw','errrp','erryaw']
           },
           atun: {
             mapped: false, mappings: {},
@@ -61,7 +67,7 @@ module.exports = {
           },
           cam: {
             mapped: false, mappings: {},
-            hasColumns: ['gpstime','gpsweek','lat','lng','alt', 'relalt','roll','pitch','yaw']
+            hasColumns: ['gpstime','gpsweek','lat','lng','alt','relalt','roll','pitch','yaw']
           },
           cmd: {
             mapped: false, mappings: {},
@@ -69,7 +75,7 @@ module.exports = {
           },
           curr: {
             mapped: false, mappings: {},
-            hasColumns: ['timems', 'thr', 'thrint', 'throut', 'volt', 'curr', 'vcc', 'currtot']
+            hasColumns: ['timems','thr','thrint','throut','volt','curr','vcc','currtot']
           },
           ctun: {
             mapped: false, mappings: {},
@@ -77,27 +83,43 @@ module.exports = {
           },
           d16: {
             mapped: false, mappings: {},
-            hasColumns: ['id' ,'value']
+            hasColumns: ['id','value']
           },
           d32: {
             mapped: false, mappings: {},
-            hasColumns: ['id' ,'value']
+            hasColumns: ['id','value']
           },
           dflt: {
             mapped: false, mappings: {},
-            hasColumns: ['id' ,'value']
+            hasColumns: ['id','value']
           },
           du16: {
             mapped: false, mappings: {},
-            hasColumns: ['id' ,'value']
+            hasColumns: ['id','value']
           },
           du32: {
             mapped: false, mappings: {},
-            hasColumns: ['id' ,'value']
+            hasColumns: ['id','value']
+          },
+          ekf1: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','roll','pitch','yaw','vn','ve','vd','pn','pe','pd','gx','gy','gz']
+          },
+          ekf2: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','ax','ay','az','vwn','vwe','mn','me','md','mx','my','mz']
+          },
+          ekf3: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','ivn','ive','ivd','ipn','ipe','ipd','imx','imy','imz','ivt']
+          },
+          ekf4: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','sv','sp','sh','smx','smy','smz','svt','ofn','efe','fs','ds']
           },
           err: {
             mapped: false, mappings: {},
-            hasColumns: ['subsys' ,'ecode']
+            hasColumns: ['subsys','ecode']
           },
           ev: {
             mapped: false, mappings: {},
@@ -108,19 +130,39 @@ module.exports = {
        		},
           gps: {
             mapped: false, mappings: {},
-            hasColumns: ['status' ,'time' ,'week', 'nsats' ,'hdop' ,'lat' ,'lng' ,'relalt' ,'alt' ,'spd' ,'gcrs', 'vz', 't']
+            hasColumns: ['status','time','week','nsats','hdop','lat','lng','relalt','alt','spd','gcrs','vz','t']
+          },
+          gps2: {
+            mapped: false, mappings: {},
+            hasColumns: ['status','time','week','nsats','hdop','lat','lng','relalt','alt','spd','gcrs','vz','t', 'dsc', 'dag']
           },
           imu: {
             mapped: false, mappings: {},
             hasColumns: [ 'timems','gyrx','gyry','gyrz','accx','accy','accz']
           },
+          imu2: {
+            mapped: false, mappings: {},
+            hasColumns: [ 'timems','gyrx','gyry','gyrz','accx','accy','accz']
+          },
+          imu3: {
+            mapped: false, mappings: {},
+            hasColumns: [ 'timems','gyrx','gyry','gyrz','accx','accy','accz']
+          },
           mag: {
             mapped: false, mappings: {},
-            hasColumns: ['timems' ,'magx' ,'magy' ,'magz' ,'ofsx','ofsy','ofsz','mofsx','mofsy','mofsz']
+            hasColumns: ['timems','magx','magy','magz','ofsx','ofsy','ofsz','mofsx','mofsy','mofsz']
+          },
+          mag2: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','magx','magy','magz','ofsx','ofsy','ofsz','mofsx','mofsy','mofsz']
+          },
+          mag3: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','magx','magy','magz','ofsx','ofsy','ofsz','mofsx','mofsy','mofsz']
           },
           mode: {
             mapped: false, mappings: {},
-            hasColumns: ['mode', 'thrcrs']
+            hasColumns: ['mode','thrcrs']
           },
           msg: {
             mapped: false, mappings: {},
@@ -128,7 +170,7 @@ module.exports = {
           },
           ntun: {
             mapped: false, mappings: {},
-            hasColumns: ['timems', 'dposx', 'dposy', 'posx', 'posy', 'dvelx','dvely','velx','vely','dacx','dacy','drol','dpit']
+            hasColumns: ['timems','dposx','dposy','posx','posy','dvelx','dvely','velx','vely','dacx','dacy','drol','dpit']
           },
           of: {
             mapped: false, mappings: {},
@@ -136,11 +178,11 @@ module.exports = {
           },
           parm: {
             mapped: false, mappings: {},
-            hasColumns: ['name' ,'value']
+            hasColumns: ['name','value']
           },
           pm: {
             mapped: false, mappings: {},
-            hasColumns: ['nlon','nloop','maxt','pmt','i2cerr','inserr','inaverr' ]
+            hasColumns: ['nlon','nloop','maxt','pmt','i2cerr','inserr','inaverr']
           },
           powr: {
             mapped: false, mappings: {},
@@ -152,16 +194,32 @@ module.exports = {
           },
           rcin: {
             mapped: false, mappings: {},
-            hasColumns: ['timems', 'c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14']
+            hasColumns: ['timems','c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14']
           },
           rcou: {
             mapped: false, mappings: {},
-            hasColumns: ['timems', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
+            hasColumns: ['timems','chan1','chan2','chan3','chan4','chan5','chan6','chan7','chan8']
+          },
+          sim : {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','roll','pitch','yaw','alt','lat','lng']
           },
           strt: {
             mapped: false, mappings: {},
             hasColumns: []
-          }
+          },
+          terr: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','status','lat','lng','spacing','terrh','cheight','pending','loaded']
+          },
+          ubx1: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','instance','noiseperms','jamind','apower']
+          },
+          ubx2: {
+            mapped: false, mappings: {},
+            hasColumns: ['timems','instance','ofsi','magi','ofsq','magq']
+          },
        	}
 
         var logContains = {};
@@ -374,9 +432,11 @@ module.exports = {
 					.on("end", function(){
 
             //Clean up averages, etc
-            noOfModes = channels.mode.mode.values.length
-            if (noOfModes > 0) {
-              channels.mode.mode.values[noOfModes - 1].end = rowNumber;
+            if (typeof channels.mode != "undefined" && typeof channels.mode.mode != "undefined") {
+              noOfModes = channels.mode.mode.values.length
+              if (noOfModes > 0) {
+                channels.mode.mode.values[noOfModes - 1].end = rowNumber;
+              }
             }
 
 /* Totally reduntant, just get last avgspd!!!
@@ -450,7 +510,7 @@ module.exports = {
                 channels = null;
                 sails.sockets.blast("upload-progress", {id: flightId, msg: "Done processing." });
 
-                //need to add file size, file hash, loganalizer result filename
+                //need to add loganalizer result, filename
                 //need to move upload somewhere nice
 
                 updateData = {
