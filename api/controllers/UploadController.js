@@ -104,64 +104,6 @@ module.exports = {
         }        
       });
 
-
-     /* if (mime.lookup(req.files.flightlog.path) == 'text/plain') {
-
-        fs.stat(req.file('flightlog').path, function (err, stats) {
-          fs.readFile(req.files.flightlog.path, function (err, data) {
-            //console.log(data);
-            // save file
-
-            var csv = require('csv');
-            csv()
-              .from.string(data.toString(), {comment: '#'})
-              .to.array( function(processedata){
-                FlightLog.create({
-                  filename: req.files.flightlog.name,
-                  size: stats.size,
-    //              raw: data,
-                  json: processedata
-                }).done(function(err, data) {
-                  // Error handling
-                  if (err) {
-                    console.error(new Date().toUTCString() + " ::UPLOAD:: " + err);
-
-                    if (req.isAjax || req.isJson) {
-                      return res.send({error: 'toobig'});
-                    } else {                
-                      return res.view({
-                        active: 'upload',
-                        error: false,
-                        toobig: true
-                      });
-                    }
-
-
-                  } else {
-                    //Check is json upload
-                    console.log("log created");
-                    if (req.isAjax || req.isJson) {
-                      res.send({redirect: 'view/' + data.id});
-                    } else {                
-                      res.redirect('view/' + data.id);
-                    }
-                  }
-                });
-              });
-          });
-        });
-      } else {
-        //Not a plain text file
-        if (req.isAjax || req.isJson) {
-          return res.send({error: 'invalid'});
-        } else {                
-          return res.view({
-            active: 'upload',
-            error: true,
-            toobig: false
-          });
-        }
-      }*/
     } else {
       // Send a JSON response
       return res.view({
@@ -170,6 +112,14 @@ module.exports = {
         toobig: false
       });
     }
+  },
+
+  migrate: function (req, res) {
+    var publisher = sails.hooks.publisher;
+
+    var job = publisher.create('migrate').save();
+
+    return res.send("Done");
   },
 
   /**
