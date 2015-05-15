@@ -348,21 +348,22 @@ var modules = {
 			this.initd = true;
 			app.graphs.push($.plot('#altitude-graph',[
 					/*{
-						label: 'GPS', 
-						data: data.gps.alt,
-						color: app.settings.colours[0],
-					},*/
-					 {
-						label: 'GPS Rel', 
-						data: data.gps.relalt,
-						color: app.settings.colours[2],
-					}/*,{
 						label: 'DS Alt', 
 						data: data.ctun.wpalt,
 						color: '#0f0',
-					}*/, {
+					},*/{
+						label: 'GPS', 
+						data: data.gps.alt,
+						color: app.settings.colours[0],
+					},
+					{
+						label: 'GPS Rel', 
+						data: data.gps.relalt,
+						color: app.settings.colours[2],
+					},
+					{
 						label: 'Sonar', 
-						data: data.ctun.alt,
+						data: data.ctun.sonalt,
 						color: app.settings.colours[0],
 					}, {
 						label: 'Barometer', 

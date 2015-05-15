@@ -44,7 +44,7 @@ module.exports = {
 	},
 
 	altitude: function(req, res) {
-		return loadAndSend(req,res, ['ctun', 'gps'], ['relalt', 'alt', 'wpalt', 'baralt', 'thrin', 'throut', 'crate', 'dcrate']);
+		return loadAndSend(req,res, ['ctun', 'gps'], ['relalt', 'alt', 'wpalt', 'baralt', 'thrin', 'throut', 'crate', 'dcrate', 'sonalt']);
 	},
 
 	attitude: function(req, res) {

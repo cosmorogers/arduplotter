@@ -164,6 +164,12 @@ table#errors td, table#errors th{
   padding-top: 15px;
 }
 
+.alert.alert-compressed {
+    margin-bottom: 0;
+    margin-top: 5px;
+    padding: 4px 5px;
+}
+
 @media (min-width: 1200px) and (max-width: 1750px) {
   .data-graphs .col-md-6  {
     width: 100%;
