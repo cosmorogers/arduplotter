@@ -83,8 +83,8 @@ module.exports.routes = {
   },
 
   'get /map/:id': {
-        controller : 'view',
-        action : 'map'
+        controller : 'details',
+        action : 'threedeemap'
   },
 
   /***************************************************************************

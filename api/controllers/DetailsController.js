@@ -170,6 +170,27 @@ module.exports = {
       });
   },
 
+  threedeemap: function (req, res) {
+    return loadLog(req, res, ['gps'], ['lat', 'lng', 'alt', 'time'], function(req, res, data) {
+
+      var path = [];
+      var flight = [];
+
+      for(var i = 0; i < data.gps.lng.length; i++) { 
+        //path.push(processed.gps.time.values[i][1]);
+        flight.push(i);
+        flight.push(data.gps.lng[i][1]);
+        flight.push(data.gps.lat[i][1]);
+        flight.push(data.gps.alt[i][1]);
+/*
+        path.push(processed.gps.lng.values[i][1]);
+        path.push(processed.gps.lat.values[i][1]);
+        path.push(processed.gps.relalt.values[i][1]);*/
+      }
+      return res.view('view/map', {path: path, flight: flight, layout: null});
+    });
+  },
+
 
   /**
    * Overrides for the settings in `config/controllers.js`
