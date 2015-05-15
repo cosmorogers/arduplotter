@@ -4,7 +4,7 @@
     <description>Flight path</description>
     <Style id="yellowLineGreenPoly">
       <LineStyle>
-        <color>7f00ffff</color>
+        <color>7f0000ff</color>
         <width>4</width>
       </LineStyle>
       <PolyStyle>
@@ -22,7 +22,7 @@
           <tessellate>1</tessellate>
           <altitudeMode>relativeToGround</altitudeMode>
           <coordinates>
-            <% for( var i in processed.gps.lat.values) { %><%= processed.gps.lng.values[i][1] %>,<%= processed.gps.lat.values[i][1] %>,<%= processed.gps.relalt.values[i][1] %> <% } %>
+            <% for( var i in data.gps.lat) { %><%= data.gps.lng[i][1] %>,<%= data.gps.lat[i][1] %>,<%= data.gps.relalt[i][1] %> <% } %>
           </coordinates>
         </LineString>
       </Placemark>

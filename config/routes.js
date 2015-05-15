@@ -51,7 +51,7 @@ module.exports.routes = {
   '/help/graphs': {
     view: 'pages/help/graphs'
   },
-
+/*
   'get /view/:id.js' : {
     controller : 'view',
     action: 'javascript'
@@ -61,9 +61,9 @@ module.exports.routes = {
     controller : 'view',
     action: 'log'
   },
-
+*/
   'get /view/:id.kml' : {
-    controller : 'view',
+    controller : 'details',
     action: 'kml'
   },
 

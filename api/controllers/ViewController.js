@@ -18,13 +18,6 @@
 module.exports = {
     
   index: function (req, res) {
-    /*return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-		  return res.view({
-  			'log' : log,
-  			'processed' : processed
-			});
-    });*/
     if (req.param('id')) {
       Flight.findOne(req.param('id'), function(err, log) {
         if (err) {
@@ -41,7 +34,6 @@ module.exports = {
             if (log.processed) {
               return res.view({
                 'log' : log,
-                //'processed' : processed
               });
             } else {
               return res.view('view/processing', { flight: log });
@@ -55,7 +47,7 @@ module.exports = {
 
   },
 
-  javascript: function (req, res) {
+/*  javascript: function (req, res) {
 	  	return loadLog(req, res, function(req, res, log) {
         processed = ProcessService.process(log.json);
 				res.contentType('javascript');
@@ -68,15 +60,7 @@ module.exports = {
         res.contentType('text');
         return res.view('view/log', {'json' : log.json, layout: null});
       });
-  },
-
-  kml: function (req, res) {
-      return loadLog(req, res, function(req, res, log) {
-        processed = ProcessService.process(log.json);
-        res.contentType('application/vnd.google-earth.kml+xml');
-        return res.view('view/kml', {'processed' : processed, layout: null});
-      });
-  },
+  },*/
 
   browse: function (req, res) {
     var perPage = 20;
@@ -187,7 +171,7 @@ module.exports = {
 
   
 };
-
+/*
 function loadLog(req, res, cb) {
   if (req.param('id')) {
     FlightLog.findOne(req.param('id'))
@@ -208,3 +192,4 @@ function loadLog(req, res, cb) {
     return res.notFound();
   }
 }
+*/

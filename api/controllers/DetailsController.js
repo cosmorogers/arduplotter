@@ -162,6 +162,15 @@ module.exports = {
 		});
 	},
 
+  kml: function (req, res) {
+			return loadLog(req, res, ['gps'], ['lat', 'lng', 'relalt'], function(req, res, data) {
+				res.contentType('application/vnd.google-earth.kml+xml');
+        return res.view('view/kml', {'data' : data, layout: null});
+      
+      });
+  },
+
+
   /**
    * Overrides for the settings in `config/controllers.js`
    * (specific to UploadController)
