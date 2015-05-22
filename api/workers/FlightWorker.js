@@ -289,7 +289,7 @@ module.exports = {
                   }
                 } else {
                   //New FMT data
-                  sails.log.warn('New Log Data', row );
+                  sails.log.warn('New Log Data', {flight: flightId, details: row});
                 }
 
               //Special rows before auto collecting data below.
@@ -558,8 +558,9 @@ module.exports = {
                         fs.unlink(file.fd, function(err){
                           if (err) {
                             sails.log.error(err);
-                            throw err;
+                            //throw err;
                             done(err);
+
                           } else {
                             done(); // everything is done!
                           }

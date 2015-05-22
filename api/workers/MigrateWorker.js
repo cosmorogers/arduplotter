@@ -37,6 +37,7 @@ module.exports = {
 
 						      	Flight.create({
 						      		_id: new ObjectID(log.logId),
+						      		createdAt: log.createdAt,
 				              processed: false,
 				            }, function (err, flight){
 
