@@ -7,9 +7,12 @@
  * Feel free to change none, some, or ALL of this file to fit your needs!
  */
 
+var hadMessage = false;
+
 var waitForUpload = function(id) {
 	io.socket.on('upload-progress', function(data){ 
 		if (id === data.id) {
+			hadMessage = true;
 			$('#progress-msg').text(data.msg);
 		}
 	});
@@ -18,4 +21,20 @@ var waitForUpload = function(id) {
       window.location.reload(); 
     }
   });
+
+  var doubleCheckProgress = function() {
+  	if (!hadMessage) {
+  		$.get('/progress/' + id, function(data) {
+  			if (data.processed) {
+  				window.location.reload();
+  			} else {
+  				ms = (data.active > 1 ? 's' : '');
+  				$('#progress-msg').text("Sorry, your log is in a queue of " + data.active + " log" + ms +" waiting for processing. Your log will be processed soon!");
+  				setTimeout(doubleCheckProgress, 1000);
+  			}
+  		});
+  	}
+  }
+
+  setTimeout(doubleCheckProgress, 1000)
 }

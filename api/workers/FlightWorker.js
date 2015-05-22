@@ -10,6 +10,9 @@ module.exports = {
     //perform job
     perform: function(job, done, context) {
         sails.log.debug("Processing Job", job.data.flight.id);
+
+        var version = 1.0; //the version of this file. Used to check if log needs reprosessing. 
+
         var time = process.hrtime();
         var file = job.data.file;
         var flightId = job.data.flight.id;
@@ -241,6 +244,8 @@ module.exports = {
 
             if (row.length > 0) {
               rowName = row[0].trim().toLowerCase();
+
+
               if (rowName === 'fmt') {
                 //Gonna assume FMT data is always in the same format :)
 
@@ -250,11 +255,12 @@ module.exports = {
                 
                 //console.log(val, formats, columns);
 
-                if (typeof knownData[val] != "undefined") { //I know about this FMT row 
+                if (typeof knownData[val] != "undefined") { //This FMT row is defined above, so I know about it
 
                   if (val !== 'fmt' && !knownData[val].mapped) { //Not the FMT FMT data, and not already mapped!
                     //Just cos in FMT doesn't mean there is any of it!
                     //logContains[val] = true; //the log contains this!
+                    logContains['fmt'] = true;
 
                     channels[val] = {};
                     //channels[val]['unknown'] = [];
@@ -287,7 +293,7 @@ module.exports = {
                 }
 
               //Special rows before auto collecting data below.
-              } else if (rowName === 'parm') {
+              } else if (rowName === 'parm' && knownData.parm.mapped) {
 
                 if (typeof channels.parm.parm == "undefined") {
                   channels.parm = {
@@ -315,7 +321,7 @@ module.exports = {
                   channels.parm.parm.values[parmName] = parmValue;
                 }
 
-              } else if (rowName === 'mode') {
+              } else if (rowName === 'mode' && knownData.mode.mapped) {
                 if (typeof channels.mode.mode == "undefined") {
                   channels.mode = {
                     mode: { name: 'mode',  flight: flightId, type: 'mode', values: []}
@@ -351,7 +357,7 @@ module.exports = {
                   channels.mode.mode.values.push(modeOb);
                 }
 
-              } else if (typeof knownData[rowName] != "undefined") {
+              } else if (typeof knownData[rowName] != "undefined" && knownData[rowName].mapped) {
                 //Automatically add row, value to the correct channel data
                 logContains[rowName] = true; //the log contains this
                 for (colIndex in row) {
@@ -406,7 +412,7 @@ module.exports = {
                   }
                 }
 
-                if (rowName == "mag" && typeof channels.mag.magx != "undefined" && typeof channels.mag.magy != "undefined" && typeof channels.mag.magz != "undefined") {
+                if (knownData.mag.mapped && rowName == "mag" && typeof channels.mag.magx != "undefined" && typeof channels.mag.magy != "undefined" && typeof channels.mag.magz != "undefined") {
                   //Calculate special magentic field after auto adding data above :)
                   x = channels.mag.magx.values[channels.mag.magx.values.length -1][1];
                   y = channels.mag.magy.values[channels.mag.magy.values.length -1][1];
@@ -511,40 +517,30 @@ module.exports = {
                 sails.sockets.blast("upload-progress", {id: flightId, msg: "Done processing." });
 
                 //need to add loganalizer result, filename
-                //need to move upload somewhere nice
 
                 updateData = {
                   processed: true,
                   logContains: logContains,
                   size: job.data.file.size,
                   filehash: job.data.hash,
+                  version: version
                 };
 
                 Flight.update(job.data.flight.id, updateData, function(err, flight) {
                   sails.log.debug("Processing done", {id: flightId, duration: process.hrtime(time)} );
                   sails.sockets.blast("processed", {id: flightId});
+                  
 
                   //Upload the log to S3!
-
                   var fs = require('fs');
                   //var zlib = require('zlib');
                   var AWS = require('aws-sdk'); 
-/*
-                  var body = fs.createReadStream(file.fd).pipe(zlib.createGzip());
-                  var s3obj = new AWS.S3({params: {Bucket: 'arduplotter-logs', Key: flightId}});
-                  s3obj.upload({Body: body}).
-                    on('httpUploadProgress', function(evt) { 
-                      console.log(evt); 
-                    })
-                    .send(function(err, data) { 
-                      console.log(err, data);
-                      done();
-                    });
-*/
                   var fileStream = fs.createReadStream(file.fd);
+
                   fileStream.on('error', function (err) {
                     if (err) { throw err; }
                   });  
+
                   fileStream.on('open', function () {
                     var s3 = new AWS.S3();
                     s3.putObject({
@@ -556,19 +552,21 @@ module.exports = {
                     }, function (err) {
                       if (err) { 
                         sails.log.error(err);
-                        throw err; 
+                        throw err;
+                        done(err);
                       } else {
                         fs.unlink(file.fd, function(err){
-                          if (err) throw err;
-                          done();
+                          if (err) {
+                            sails.log.error(err);
+                            throw err;
+                            done(err);
+                          } else {
+                            done(); // everything is done!
+                          }
                         });
                       }
                     });
                   });
-
-
-
-
                   
                 });
               });

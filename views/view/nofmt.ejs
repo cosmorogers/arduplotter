@@ -1,0 +1,25 @@
+<%
+  active = 'view'
+  title = 'Log'
+%>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>Sorry, there was a problem processing your log</h1>
+			<h2>Your log is missing the important FMT Data</h2>
+			<p>Logs from different autopilots and different versions of ArduPilot contain slightly different data.</p>
+			<p>At the start of your dataflash log ArduPlotter expects there to be some lines that describe the actual data in the log. These lines are known as 'FMT' data.</p>
+			<p>Without this 'FMT' data ArduPlotter cannot work out what the data within your log actually means, as it just sees just a bunch of numbers.</p>
+			<p>If you have deliberately removed these lines please re-add them and then re-upload your log to be able to see all of your pretty data!</p>
+
+			<p><br><br><br><br></p>
+			<h3>But my log does have FMT data?!</h3>
+			<p><strong>If this is the case, and you can see FMT data in your log when you open it in a text editor, please <a href="/contact">contact Chris</a>, as something has gone horribly wrong!</strong></p>
+			<p>FMT data will look something like the example below, and should be at the very top of your log file</p>
+			<pre>FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format,Columns
+FMT, 129, 23, PARM, Nf, Name,Value
+FMT, 130, 45, GPS, BIHBcLLeeEefI, Status,TimeMS,Week,NSats,HDop,Lat,Lng,RelAlt,Alt,Spd,GCrs,VZ,T</pre>
+
+		</div>
+	</div>
+</div>

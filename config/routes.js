@@ -87,6 +87,11 @@ module.exports.routes = {
         action : 'threedeemap'
   },
 
+  'get /progress/:id' : {
+        controller: 'view',
+        action: 'progress'
+  }
+
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

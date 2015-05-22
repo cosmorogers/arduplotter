@@ -32,9 +32,11 @@ module.exports = {
             }*/
 
             if (log.processed) {
-              return res.view({
-                'log' : log,
-              });
+              if (log.logContains.fmt) {
+                return res.view({'log': log});
+              } else {
+                return res.view('view/nofmt', {flight: log});
+              }
             } else {
               return res.view('view/processing', { flight: log });
             }
@@ -47,20 +49,26 @@ module.exports = {
 
   },
 
-/*  javascript: function (req, res) {
-	  	return loadLog(req, res, function(req, res, log) {
-        processed = ProcessService.process(log.json);
-				res.contentType('javascript');
-				return res.view('view/javascript', {'processed' : processed, layout: null});
-      });
-  },
+  progress: function (req, res) {
+    if (req.param('id')) {
+      Flight.findOne(req.param('id'), function(err, log) {
+        if (err) {
+          return res.notFound();
+        } else {
+          var queue = sails.hooks.publisher.queue;
+          queue.inactiveCount( function( err, total) {
+            console.log(total);
 
-  log: function (req, res) {
-      return loadLog(req, res, function(req, res, log) {
-        res.contentType('text');
-        return res.view('view/log', {'json' : log.json, layout: null});
+            return res.json({
+              active: total,
+              processed: log.processed
+            });
+
+          });
+        }
       });
-  },*/
+    }
+  },
 
   browse: function (req, res) {
     var perPage = 20;
@@ -148,25 +156,3 @@ module.exports = {
 
   
 };
-/*
-function loadLog(req, res, cb) {
-  if (req.param('id')) {
-    FlightLog.findOne(req.param('id'))
-    .done(function(err, log) {
-      if (err) {
-            console.log("not found", res);
-
-        return res.notFound();
-	    } else {
-        if (typeof log == 'undefined') {
-          return res.notFound();
-        } else {
-          return cb(req, res, log);
-        }
-      }
-    });
-  } else {
-    return res.notFound();
-  }
-}
-*/
