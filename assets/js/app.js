@@ -652,7 +652,7 @@ var modules = {
 						color: app.settings.colours[2],
 					},
 					{
-						label: 'Desired Velocity X', 
+						label: 'Desired Velocity Y', 
 						data: data.ntun.dvely,
 						color: app.settings.colours[3],
 					}];
