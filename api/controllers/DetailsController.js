@@ -162,19 +162,25 @@ module.exports = {
 		});
 	},
 
-  kml: function (req, res) {
-			return loadLog(req, res, ['gps'], ['lat', 'lng', 'relalt'], function(req, res, data) {
-				res.contentType('application/vnd.google-earth.kml+xml');
-        return res.view('view/kml', {'data' : data, layout: null});
-      
-      });
-  },
+    kml: function (req, res) {
+        return loadLog(req, res, ['gps'], ['lat', 'lng', 'relalt'], function(req, res, data) {
+            if (typeof data.lat == "undefined" || typeof data.lng == "undefined") { 
+                return res.notFound();
+            }
+            res.contentType('application/vnd.google-earth.kml+xml');
+            return res.view('view/kml', {'data' : data, layout: null});
+        });
+    },
 
   threedeemap: function (req, res) {
     return loadLog(req, res, ['gps'], ['lat', 'lng', 'alt', 'time'], function(req, res, data) {
 
       var path = [];
       var flight = [];
+      
+      if (typeof data.gps.lng == "undefined" || typeof data.gps.lat == "undefined") { 
+        return res.notFound();
+      }
 
       for(var i = 0; i < data.gps.lng.length; i++) { 
         //path.push(processed.gps.time.values[i][1]);
