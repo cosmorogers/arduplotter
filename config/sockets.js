@@ -43,11 +43,11 @@ module.exports.sockets = {
   //
   // -OR-
   //
-
-  // adapter: 'redis',
-  // host: '127.0.0.1',
-  // port: 6379,
-  // db: 'sails',
+  adapter: 'socket.io-redis',
+ // adapter: 'redis',
+  host: '127.0.0.1',
+  port: 6379,
+  db: 'sails',
   // pass: '<redis auth password>'
 
 
@@ -131,5 +131,7 @@ module.exports.sockets = {
 
   // More configuration options for Sails+Socket.io:
   // http://sailsjs.org/#/documentation/reference/sails.config/sails.config.sockets.html
+
+ //  transports: ["websockets"]
 
 };

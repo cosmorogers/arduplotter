@@ -544,7 +544,7 @@ module.exports = {
                   fileStream.on('open', function () {
                     var s3 = new AWS.S3();
                     s3.putObject({
-                      Bucket: 'arduplotter-dev-logs',
+                      Bucket: 'arduplotter-logs-ie',
                       Key: flightId + '.log',
                       Body: fileStream,
                       ACL:'public-read',

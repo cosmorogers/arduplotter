@@ -30,6 +30,7 @@
     "sails-hook-publisher": "^0.1.1",
     "sails-hook-subscriber": "^0.1.4",
     "sails-mongo": "~0.10.0",
+    "socket.io-redis": "^1.0.0",
     "winston": "1.0.0",
     "winston-loggly": "1.1.0"
   },
