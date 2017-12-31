@@ -24,63 +24,86 @@ module.exports = {
       //Validate uploaded file
       var mime = require('mime');
 
-      if (mime.lookup(req.files.flightlog.path) == 'text/plain') {
 
-        fs.stat(req.files.flightlog.path, function (err, stats) {
-          fs.readFile(req.files.flightlog.path, function (err, data) {
-            //console.log(data);
-            // save file
+      req.file('flightlog').upload({
+        maxBytes: 50000000
+      }, function( err, files) {
+        if (err) {
 
-            var csv = require('csv');
-            csv()
-              .from.string(data.toString(), {comment: '#'})
-              .to.array( function(processedata){
-                FlightLog.create({
-                  filename: req.files.flightlog.name,
-                  size: stats.size,
-    //              raw: data,
-                  json: processedata
-                }).done(function(err, data) {
-                  // Error handling
-                  if (err) {
-                    console.error(new Date().toUTCString() + " ::UPLOAD:: " + err);
+          sails.log.info("Upload error", err);
+          if (req.isAjax || req.isJson) {
+            return res.send({error: 'toobig'});
+          } else {                
+            return res.view({
+              active: 'upload',
+              error: false,
+              toobig: true
+            });
+          }
 
-                    if (req.isAjax || req.isJson) {
-                      return res.send({error: 'toobig'});
-                    } else {                
-                      return res.view({
-                        active: 'upload',
-                        error: false,
-                        toobig: true
-                      });
-                    }
+        } else {
+          //Do quick initial filter
+          var file = files[0];
+          if (mime.lookup(file.fd) == 'text/plain') {
 
+            sails.log.info(["File upload", file]);
+            
+            var publisher = sails.hooks.publisher;
 
-                  } else {
-                    //Check is json upload
-                    console.log("log created");
-                    if (req.isAjax || req.isJson) {
-                      res.send({redirect: 'view/' + data.id});
-                    } else {                
-                      res.redirect('view/' + data.id);
-                    }
+            //Create a flight to redirect the user to
+            Flight.create({
+              processed: false,
+            }, function (err, flight){
+
+              if (err) {
+
+              } else {
+
+                var crypto = require('crypto'), fs = require('fs');
+                fs.readFile(file.fd, function (err, data) {
+                  hash = crypto.createHash('md5')
+                               .update(data, 'utf8')
+                               .digest('hex');
+              
+                   //Create a job to process this new flight
+                  var job = publisher.create('flight', {
+                    'title'  : 'Processing Log', //title for kue
+                    'file'   : file, //the file to process
+                    'flight' : flight, //the flight reference
+                    'hash'   : hash //the file hash
+                  }).save();
+
+                  //Redirect the user to the log page (will show it as processing until complete)
+                  var url = 'view/' + flight.id;
+                  if (req.isAjax || req.isJson) {
+                    return res.send({redirect: url});
+                  } else {                
+                    return res.redirect(url);
                   }
+
                 });
+              }
+
+            }); 
+
+
+            
+
+          } else {
+            //Not a plain text file
+            if (req.isAjax || req.isJson) {
+              return res.send({error: 'invalid'});
+            } else {                
+              return res.view({
+                active: 'upload',
+                error: true,
+                toobig: false
               });
-          });
-        });
-      } else {
-        //Not a plain text file
-        if (req.isAjax || req.isJson) {
-          return res.send({error: 'invalid'});
-        } else {                
-          return res.view({
-            active: 'upload',
-            error: true,
-            toobig: false
-          });
-        }
-      }
+            }
+          }
+        }        
+      });
+
     } else {
       // Send a JSON response
       return res.view({
@@ -89,6 +112,14 @@ module.exports = {
         toobig: false
       });
     }
+  },
+
+  migrate: function (req, res) {
+    var publisher = sails.hooks.publisher;
+
+    var job = publisher.create('migrate').save();
+
+    return res.send("Done");
   },
 
   /**

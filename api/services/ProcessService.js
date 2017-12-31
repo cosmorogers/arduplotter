@@ -106,7 +106,8 @@ exports.process = function(json) {
             angbst: { col: null, values: [] },
             crate:  { col: null, values: [] },
             throut: { col: null, values: [] },
-            dcrate: { col: null, values: [] }
+            dcrate: { col: null, values: [] },
+            alt: { col: null, values: [] },
         },
         err: {
             exists: false,
@@ -323,6 +324,8 @@ exports.process = function(json) {
                 processed.ctun.crate.values.push(  [rowNum, parseFloat(row[processed.ctun.crate.col])]);
                 processed.ctun.throut.values.push( [rowNum, parseFloat(row[processed.ctun.throut.col])]);
                 processed.ctun.dcrate.values.push( [rowNum, parseFloat(row[processed.ctun.dcrate.col])]);
+
+                processed.ctun.alt.values.push( [rowNum, parseFloat(row[processed.ctun.alt.col])]);
                 break;
 
             case 'ERR':

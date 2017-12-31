@@ -18,68 +18,63 @@
 module.exports = {
     
   index: function (req, res) {
-    /*return loadLog(req, res, function(req, res, log) {
-			processed = ProcessService.process(log.json);
-		  return res.view({
-  			'log' : log,
-  			'processed' : processed
-			});
-    });*/
     if (req.param('id')) {
-      FlightLogHeader.findOneByLogId(req.param('id'))
-        .done(function(err, log) {
+      Flight.findOne(req.param('id'), function(err, log) {
         if (err) {
-          return res.notfound();
+          return res.notFound();
         } else {
           if (typeof log == 'undefined') {
-            return res.notfound();
+            return res.notFound();
           } else {
             
-            if (typeof log.build == "undefined" || log.build < 2) {
+            /*if (typeof log.build == "undefined" || log.build < 2) {
               return res.redirect('rebuild/' + log.logId);
-            }
+            }*/
 
-            return res.view({
-              'log' : log,
-              //'processed' : processed
-            });
+            if (log.processed) {
+              if (log.logContains.fmt) {
+                return res.view({'log': log});
+              } else {
+                return res.view('view/nofmt', {flight: log});
+              }
+            } else {
+              return res.view('view/processing', { flight: log });
+            }
           }
         }
       });
     } else {
-      return res.notfound();
+      return res.notFound();
     }
 
   },
 
-  javascript: function (req, res) {
-	  	return loadLog(req, res, function(req, res, log) {
-        processed = ProcessService.process(log.json);
-				res.contentType('javascript');
-				return res.view('view/javascript', {'processed' : processed, layout: null});
-      });
-  },
+  progress: function (req, res) {
+    if (req.param('id')) {
+      Flight.findOne(req.param('id'), function(err, log) {
+        if (err) {
+          return res.notFound();
+        } else {
+          var queue = sails.hooks.publisher.queue;
+          queue.inactiveCount( function( err, total) {
+            console.log(total);
 
-  log: function (req, res) {
-      return loadLog(req, res, function(req, res, log) {
-        res.contentType('text');
-        return res.view('view/log', {'json' : log.json, layout: null});
-      });
-  },
+            return res.json({
+              active: total,
+              processed: log.processed
+            });
 
-  kml: function (req, res) {
-      return loadLog(req, res, function(req, res, log) {
-        processed = ProcessService.process(log.json);
-        res.contentType('application/vnd.google-earth.kml+xml');
-        return res.view('view/kml', {'processed' : processed, layout: null});
+          });
+        }
       });
+    }
   },
 
   browse: function (req, res) {
     var perPage = 20;
     var page = 1;
 
-    FlightLogHeader.count(function(err, num) {
+    Flight.count(function(err, num) {
       if (!err) {
         var count = num;
         var page = 1;
@@ -95,7 +90,7 @@ module.exports = {
 
         var skip = (page - 1) * perPage;
         
-        FlightLogHeader.find()
+        Flight.find()
           .sort('createdAt DESC')
           .limit(perPage)
           .skip(skip)
@@ -152,30 +147,7 @@ module.exports = {
 
     return;
   },
-
-
-  map: function (req, res) {
-    return loadLog(req, res, function(req, res, log) {
-      processed = ProcessService.process(log.json);
-
-      var path = [];
-      var flight = [];
-
-      for(var i = 0; i < processed.gps.time.values.length; i++) { 
-        //path.push(processed.gps.time.values[i][1]);
-        flight.push(i);
-        flight.push(processed.gps.lng.values[i][1]);
-        flight.push(processed.gps.lat.values[i][1]);
-        flight.push(processed.gps.alt.values[i][1]);
-/*
-        path.push(processed.gps.lng.values[i][1]);
-        path.push(processed.gps.lat.values[i][1]);
-        path.push(processed.gps.relalt.values[i][1]);*/
-      }
-      return res.view({path: path, flight: flight, layout: null});
-    });
-  },
-
+  
   /**
    * Overrides for the settings in `config/controllers.js`
    * (specific to ViewController)
@@ -184,24 +156,3 @@ module.exports = {
 
   
 };
-
-function loadLog(req, res, cb) {
-  if (req.param('id')) {
-    FlightLog.findOne(req.param('id'))
-    .done(function(err, log) {
-      if (err) {
-            console.log("not found", res);
-
-        return res.notfound();
-	    } else {
-        if (typeof log == 'undefined') {
-          return res.notfound();
-        } else {
-          return cb(req, res, log);
-        }
-      }
-    });
-  } else {
-    return res.notfound();
-  }
-}

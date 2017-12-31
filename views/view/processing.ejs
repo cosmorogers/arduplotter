@@ -1,0 +1,26 @@
+<%
+  active = 'view'
+  title = 'View Log (Processing)'
+  pageClass = 'view-processing'
+%>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron">
+				<h1>Our pixies are currently going through your log extracting all your lovely data!</h1>
+				<h2>
+					They will be done shortly, the page will automatically reload when they are done. They thank you for your patience.
+				</h2>
+				<p>If you are waiting for more than a couple of seconds please try refreshing the page (unless your log is huge!)</p>
+			</div>
+			<div class="alert alert-info" role="alert">
+				<strong>Progress: </strong>
+				<span id="progress-msg">loading...</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%
+scripts = "<script>waitForUpload('" + flight.id + "');</script>";
+%>
